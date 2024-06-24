@@ -18,6 +18,8 @@ func TokenMiddleware() gin.HandlerFunc {
 	parser := jwt.NewParser()
 
 	return func(ctx *gin.Context) {
+		println("TokenMiddleware")
+		println(ctx.GetHeader("X-Access-Token"))
 		idToken := ctx.GetHeader("X-Access-Token")
 		token, _, err := parser.ParseUnverified(idToken, &Claims{})
 		if err == nil {

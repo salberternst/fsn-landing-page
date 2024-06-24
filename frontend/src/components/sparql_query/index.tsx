@@ -9,6 +9,9 @@ const DefaultQuery = `SELECT * WHERE {
 }
 `;
 
+/**
+ * Renders a component for executing SPARQL queries using Yasgui.
+ */
 export default function SparqlQuery() {
   useEffect(() => {
     const yasgui = new Yasgui(document.getElementById("yasgui"), {

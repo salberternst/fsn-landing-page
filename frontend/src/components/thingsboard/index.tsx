@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 
+/**
+ * Renders an iframe that displays the Thingsboard application.
+ * The URL of the iframe is dynamically generated based on the current window location.
+ */
 export default function Thingsboard() {
   const [url, setUrl] = useState();
 
