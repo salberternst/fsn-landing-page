@@ -7,23 +7,23 @@ import { HttpError } from "react-admin";
  * @throws {HttpError} If the server returns an error response.
  */
 export const fetchAssets = async (pagination: any) => {
-    const { page, perPage }: { page: number; perPage: number } = pagination;
-    const response = await fetch(
-        `/api/assets?page=${page}&page_size=${perPage}`,
-        {
-            headers: {
-                "Content-Type": "application/json",
-            }
-        }
-    );
-    
-    const json = await response.json();
-    if (response.ok === false) {
-        throw new HttpError(json.message, response.status);
+  const { page, perPage }: { page: number; perPage: number } = pagination;
+  const response = await fetch(
+    `/api/assets?page=${page}&page_size=${perPage}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
     }
-    
-    return json;
-}
+  );
+
+  const json = await response.json();
+  if (response.ok === false) {
+    throw new HttpError(json.message, response.status);
+  }
+
+  return json;
+};
 
 /**
  * Fetches an asset from the server.
@@ -32,41 +32,41 @@ export const fetchAssets = async (pagination: any) => {
  * @throws {HttpError} If the server returns an error response.
  */
 export const fetchAsset = async (id: string) => {
-    const response = await fetch(`/api/assets/${id}`, {
-        headers: {
-            "Content-Type": "application/json",
-        }
-    });
+  const response = await fetch(`/api/assets/${id}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
-    const json = await response.json();
-    if (response.ok === false) {
-        throw new HttpError(json.message, response.status);
-    }
+  const json = await response.json();
+  if (response.ok === false) {
+    throw new HttpError(json.message, response.status);
+  }
 
-    return json;
-}
+  return json;
+};
 
 /**
  * Deletes an asset with the specified ID.
- * 
+ *
  * @param id - The ID of the asset to delete.
  * @returns A Promise that resolves to the JSON response from the server.
  * @throws {HttpError} If the server returns an error response.
  */
 export const deleteAsset = async (id: string) => {
-    const response = await fetch(`/api/assets/${id}`, {
-        method: "DELETE",
-        headers: {
-            "Content-Type": "application/json",
-        }
-    });
+  const response = await fetch(`/api/assets/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
-    if (response.ok === false) {
-        throw new HttpError(response.statusText, response.status);
-    }
+  if (response.ok === false) {
+    throw new HttpError(response.statusText, response.status);
+  }
 
-    return response
-}
+  return response;
+};
 
 /**
  * Creates a new asset by making a POST request to the server.
@@ -75,19 +75,19 @@ export const deleteAsset = async (id: string) => {
  * @throws {HttpError} - If the response status is not ok, an HttpError is thrown with the error message and status code.
  */
 export const createAsset = async (data: any): Promise<any> => {
-    const response = await fetch(`/api/assets`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-    });
+  const response = await fetch(`/api/assets`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
 
-    const json = await response.json();
-    if (response.ok === false) {
-        console.log(json)
-        throw new HttpError("message", response.status, json);
-    }
+  const json = await response.json();
+  if (response.ok === false) {
+    console.log(json);
+    throw new HttpError("message", response.status, json);
+  }
 
-    return json;
-}
+  return json;
+};

@@ -14,13 +14,18 @@ import Container from "@mui/material/Container";
 import DeviceHub from "@mui/icons-material/DeviceHub";
 import QueryStatsIcon from "@mui/icons-material/QueryStats";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import { useLocation } from "react-router-dom";
 import dataSource from "./data-source";
 import authProvider from "./auth-provider";
 import { SparqlPage } from "./custom_pages/sparql";
 import Thingsboard from "./components/thingsboard";
-import { ThingDescriptionCreate, ThingDescriptionEdit, ThingDescriptionList, ThingDescriptionShow } from "./components/thing_description";
+import {
+  ThingDescriptionCreate,
+  ThingDescriptionEdit,
+  ThingDescriptionList,
+  ThingDescriptionShow,
+} from "./components/thing_description";
 import { AssetCreate, AssetShow, AssetsList } from "./components/assets";
 
 const CustomUserMenu = () => {
@@ -98,7 +103,7 @@ export const App = () => (
       icon={AccountBalanceIcon}
       list={AssetsList}
       show={AssetShow}
-      create={AssetCreate}  
+      create={AssetCreate}
     />
   </Admin>
 );

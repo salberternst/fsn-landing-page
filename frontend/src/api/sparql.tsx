@@ -7,16 +7,19 @@ import { HttpError } from "react-admin";
  * @throws {HttpError} If the server returns an error response.
  */
 export const querySparql = async (query: string) => {
-    const response = await fetch(`/api/sparql?query=${encodeURIComponent(query)}`, {
-        headers: {
-            "Content-Type": "application/json",
-        }
-    });
-
-    const json = await response.json();
-    if (response.ok === false) {
-        throw new HttpError(json.message, response.status);
+  const response = await fetch(
+    `/api/sparql?query=${encodeURIComponent(query)}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
     }
+  );
 
-    return json;
-}
+  const json = await response.json();
+  if (response.ok === false) {
+    throw new HttpError(json.message, response.status);
+  }
+
+  return json;
+};

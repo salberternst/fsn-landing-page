@@ -10,7 +10,9 @@ import { HttpError } from "react-admin";
 export const fetchThings = async (pagination: any, sort: any) => {
   const { page, perPage }: { page: number; perPage: number } = pagination;
   const response = await fetch(
-    `/api/registry/things?page=${page}&page_size=${perPage}&sort_order=${sort.order.toLowerCase()}&sort_by=${sort.field}`,
+    `/api/registry/things?page=${page}&page_size=${perPage}&sort_order=${sort.order.toLowerCase()}&sort_by=${
+      sort.field
+    }`
   );
 
   const json = await response.json();
@@ -39,7 +41,6 @@ export const fetchThing = async (id: string) => {
   return json;
 };
 
-
 /**
  * Updates a thing in the registry.
  *
@@ -63,7 +64,6 @@ export const updateThing = async (id: string, thing: any): Promise<any> => {
 
   return thing;
 };
-
 
 /**
  * Deletes a thing from the registry.
