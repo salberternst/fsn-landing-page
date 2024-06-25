@@ -2,13 +2,6 @@ import { useEffect, useRef } from "react";
 import Yasgui from "@triply/yasgui";
 import "@triply/yasgui/build/yasgui.min.css";
 
-const DefaultQuery = `SELECT * WHERE {
-  GRAPH ?g {
-    ?sub ?pred ?obj .
-  }
-}
-`;
-
 /**
  * Renders a component for executing SPARQL queries using Yasgui.
  */
@@ -28,5 +21,5 @@ export default function SparqlQuery() {
     }
   });
 
-  return <div id="yasgui" ref={refContainer}/>;
+  return <div id="yasgui" ref={refContainer} />;
 }

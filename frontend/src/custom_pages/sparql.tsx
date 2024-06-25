@@ -1,13 +1,14 @@
-import { Card, CardContent, CardHeader } from "@mui/material";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
 import SparqlQuery from "../components/sparql_query";
 import { Title } from "react-admin";
 
 export const SparqlPage = () => (
-  <Card>
-    <Title title="Query" />
-    <CardHeader title="SPARQL Endpoints" />
-    <CardContent>
-      <SparqlQuery />
-    </CardContent>
-  </Card>
+  <Paper sx={{ mt: 5, p: 1 }}>
+    <Title title="SPARQL Query" />
+    <Typography variant="h6" gutterBottom>
+      SPARQL Query
+    </Typography>
+    <SparqlQuery />
+  </Paper>
 );
