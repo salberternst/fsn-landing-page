@@ -10,7 +10,7 @@ async function fetchUserInfo() {
 const authProvider = {
   checkAuth: () => Promise.resolve(),
   checkError: () => {
-    return Promise.resolve();
+    return fetchUserInfo();
   },
   getIdentity: async () => {
     return fetchUserInfo();

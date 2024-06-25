@@ -3,17 +3,12 @@ import {
     List,
     Datagrid,
     DateField,
-    BooleanField,
     TextField,
     Show,
     Edit,
     SimpleForm,
-    TextInput,
     Create,
     ArrayField,
-    BooleanInput,
-    ArrayInput,
-    SimpleFormIterator,
     FileInput,
     FileField,
     useRecordContext,
@@ -22,6 +17,7 @@ import {
     TopToolbar,
     EditButton,
     Button,
+    useInput,
 } from "react-admin";
 import { Divider, Typography } from "@mui/material";
 import CodeMirror from "@uiw/react-codemirror";
@@ -29,49 +25,52 @@ import { json } from "@codemirror/lang-json";
 import { EditorState } from "@codemirror/state";
 import lzs from "lz-string";
 
-export const ThingList = () => (
+export const ThingDescriptionList = () => (
     <List empty={false} hasCreate={true} exporter={false}>
         <Datagrid bulkActionButtons={false} rowClick="show">
-            <TextField source="id" />
-            <DateField showTime={true} source="createdAt" />
-            <DateField showTime={true} source="updatedAt" />
-            <TextField source="title" />
-            <TextField source="types" />
+            <TextField source="id" sortable={false} />
+            <DateField showTime={true} source="createdAt" label="Created At"/>
+            <DateField showTime={true} source="updatedAt" label="Updated At"/>
+            <TextField source="title"/>
+            <TextField source="types" sortable={false}/>
         </Datagrid>
     </List>
 );
 
-export const ThingShowProperties = () => {
+export const ThingDescriptionShowProperties = () => {
     const record = useRecordContext();
+    if(Object.keys(record.description.properties || []).length === 0) {
+        return null;
+    }
+
     return (
         <>
             <Typography variant="h6" sx={{ marginTop: 2 }}>
                 Properties
             </Typography>
             <Divider />
-            {record.properties?.map((_, index) => (
-                <div key={record.properties[index].id}>
+            {Object.keys(record.description.properties).map(name => (
+                <div key={record.description.properties[name]}>
                     <Labeled fullWidth label="Name">
-                        <TextField source={`properties.${index}.name`} />
+                        <TextField source={`description.properties.${name}.name`} />
                     </Labeled>
                     <Labeled fullWidth label="Title">
-                        <TextField source={`properties.${index}.title`} emptyText="-" />
+                        <TextField source={`description.properties.${name}.title`} emptyText="-" />
                     </Labeled>
                     <Labeled fullWidth label="Description">
                         <TextField
                             label="description"
-                            source={`properties.${index}.description`}
+                            source={`description.properties.${name}.description`}
                             emptyText="-"
                         />
                     </Labeled>
                     <Labeled fullWidth label="Unit">
-                        <TextField source={`properties.${index}.unit`} emptyText="-" />
+                        <TextField source={`description.properties.${name}.unit`} emptyText="-" />
                     </Labeled>
-                    <ArrayField source={`properties.${index}.forms`}>
+                    <ArrayField source={`description.properties.${name}.forms`}>
                         <Datagrid bulkActionButtons={false} hover={false} sx={{}}>
                             <TextField source="op" label="Operation" emptyText="-" />
                             <TextField source="href" label="Target" />
-                            <BooleanField source="public" />
                         </Datagrid>
                     </ArrayField>
                 </div>
@@ -80,33 +79,36 @@ export const ThingShowProperties = () => {
     );
 };
 
-export const ThingShowActions = () => {
+export const ThingDescriptionShowActions = () => {
     const record = useRecordContext();
+    if(Object.keys(record.description.actions || []).length === 0) {
+        return null;
+    }
+
     return (
         <>
             <Typography variant="h6" sx={{ marginTop: 2 }}>
                 Actions
             </Typography>
             <Divider />
-            {record.actions?.map((_, index) => (
-                <div key={record.actions[index].id}>
+            {Object.keys(record.description.actions).map(name => (
+                <div key={record.description.actions[name]}>
                     <Labeled fullWidth label="Name">
-                        <TextField source={`actions.${index}.name`} />
+                        <TextField source={`description.actions.${name}.name`} />
                     </Labeled>
                     <Labeled fullWidth label="Title">
-                        <TextField source={`actions.${index}.title`} emptyText="-" />
+                        <TextField source={`description.actions.${name}.title`} emptyText="-" />
                     </Labeled>
                     <Labeled fullWidth label="Description">
-                        <TextField source={`actions.${index}.description`} emptyText="-" />
+                        <TextField source={`description.actions.${name}.description`} emptyText="-" />
                     </Labeled>
                     <Labeled fullWidth label="Unit">
-                        <TextField source={`actions.${index}.unit`} emptyText="-" />
+                        <TextField source={`description.actions.${name}.unit`} emptyText="-" />
                     </Labeled>
-                    <ArrayField source={`actions.${index}.forms`}>
+                    <ArrayField source={`description.actions.${name}.forms`}>
                         <Datagrid bulkActionButtons={false} hover={false} sx={{}}>
                             <TextField source="op" label="Operation" emptyText="-" />
                             <TextField source="href" label="Target" />
-                            <BooleanField source="public" />
                         </Datagrid>
                     </ArrayField>
                 </div>
@@ -115,9 +117,9 @@ export const ThingShowActions = () => {
     );
 };
 
-export const ThingShowEvents = () => {
+export const ThingDescriptionShowEvents = () => {
     const record = useRecordContext();
-    if (record.events?.length === 0) {
+    if(Object.keys(record.description.events || []).length === 0) {
         return null;
     }
 
@@ -127,25 +129,24 @@ export const ThingShowEvents = () => {
                 Events
             </Typography>
             <Divider />
-            {record.events?.map((_, index) => (
-                <div key={record.events[index].id}>
+            {Object.keys(record.description.events).map(name => (
+                <div key={record.description.events[name]}>
                     <Labeled fullWidth label="Name">
-                        <TextField source={`events.${index}.name`} />
+                        <TextField source={`description.events.${name}.name`} />
                     </Labeled>
                     <Labeled fullWidth label="Title">
-                        <TextField source={`events.${index}.title`} emptyText="-" />
+                        <TextField source={`description.events.${name}.title`} emptyText="-" />
                     </Labeled>
                     <Labeled fullWidth label="Description">
-                        <TextField source={`events.${index}.description`} emptyText="-" />
+                        <TextField source={`description.events.${name}.description`} emptyText="-" />
                     </Labeled>
                     <Labeled fullWidth label="Unit">
-                        <TextField source={`events.${index}.unit`} emptyText="-" />
+                        <TextField source={`description.events.${name}.unit`} emptyText="-" />
                     </Labeled>
-                    <ArrayField source={`events.${index}.forms`}>
+                    <ArrayField source={`description.events.${name}.forms`}>
                         <Datagrid bulkActionButtons={false} hover={false} sx={{}}>
                             <TextField source="op" label="Operation" emptyText="-" />
                             <TextField source="href" label="Target" />
-                            <BooleanField source="public" />
                         </Datagrid>
                     </ArrayField>
                 </div>
@@ -154,11 +155,11 @@ export const ThingShowEvents = () => {
     );
 };
 
-export const ThingShowDescription = () => {
+export const ThingDescriptionShowDescription = () => {
     const record = useRecordContext();
     return (
         <CodeMirror
-            value={JSON.stringify(record.description, null, 4)}
+            value={JSON.stringify(record, null, 4)}
             extensions={[json(), EditorState.readOnly.of(true)]}
             basicSetup={{
                 lineNumbers: false,
@@ -169,25 +170,7 @@ export const ThingShowDescription = () => {
     );
 };
 
-export const ThingShowCredentials = () => {
-    return (
-        <>
-            <Typography variant="h6" sx={{ marginTop: 2 }}>
-                Security Definitions
-            </Typography>
-            <Divider />
-            <ArrayField source="securityDefinitions">
-                <Datagrid bulkActionButtons={false}>
-                    <TextField source="name" />
-                    <TextField source="scheme" />
-                    <TextField source="description" emptyText="-" />
-                </Datagrid>
-            </ArrayField>
-        </>
-    );
-};
-
-export const ThingShowLinks = () => (
+export const ThingDescriptionShowLinks = () => (
     <>
         <Typography variant="h6" sx={{ marginTop: 2 }}>
             Links
@@ -203,22 +186,22 @@ export const ThingShowLinks = () => (
     </>
 );
 
-export const ThingShowTitle = () => {
+export const ThingDescriptionShowTitle = () => {
     const record = useRecordContext();
     return (
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            {record.description?.title}
+            {record.description.title}
         </Typography>
     );
 };
 
-export const ThingShowActionBar = () => {
+export const ThingDescriptionShowActionBar = () => {
     const record = useRecordContext();
     const onClick = () => {
         if (record) {
             const data = "td" + "json" + JSON.stringify(record.description, null, 4);
             const compressed = lzs.compressToEncodedURIComponent(data);
-            window.open(`http://plugfest.thingweb.io/playground/#${compressed}`);
+            window.open(`https://playground.thingweb.io/#${compressed}`);
         }
     };
 
@@ -230,11 +213,11 @@ export const ThingShowActionBar = () => {
     );
 };
 
-export const ThingShow = () => {
+export const ThingDescriptionShow = () => {
     return (
-        <Show actions={<ThingShowActionBar />}>
+        <Show actions={<ThingDescriptionShowActionBar />}>
             <SimpleShowLayout>
-                <ThingShowTitle />
+                <ThingDescriptionShowTitle />
                 <Divider />
                 <Labeled fullWidth label="Id">
                     <TextField source="description.id" />
@@ -248,78 +231,70 @@ export const ThingShow = () => {
             </SimpleShowLayout>
             <TabbedShowLayout>
                 <TabbedShowLayout.Tab label="summary">
-                    <ThingShowLinks />
-                    <ThingShowCredentials />
-                    <ThingShowProperties />
-                    <ThingShowActions />
-                    <ThingShowEvents />
+                    <ThingDescriptionShowLinks />
+                    <ThingDescriptionShowProperties />
+                    <ThingDescriptionShowActions />
+                    <ThingDescriptionShowEvents />
                 </TabbedShowLayout.Tab>
                 <TabbedShowLayout.Tab label="Thing Description">
-                    <ThingShowDescription />
+                    <ThingDescriptionShowDescription />
                 </TabbedShowLayout.Tab>
             </TabbedShowLayout>
         </Show>
     );
 };
 
-export const ThingEdit = () => {
+const ThingDescriptionEditor = () => {
+    const record = useRecordContext();
+    const { field } = useInput({ source: "description" });
+    return (
+        <CodeMirror
+            {...field}
+            extensions={[json()]}
+            basicSetup={{
+                lineNumbers: true,
+                foldGutter: true,
+            }}
+            maxHeight="100%"
+            value={JSON.stringify(record.description, null, 4)}
+        />
+);
+}
+
+export const ThingDescriptionEdit = () => {
     return (
         <Edit mutationMode="pessimistic">
             <SimpleForm>
-                <TextInput fullWidth source="description.id" label="Id" disabled />
-                <TextInput fullWidth source="description.title" label="Title" />
-                <TextInput
-                    fullWidth
-                    source="description.description"
-                    label="Description"
-                />
-                <ArrayInput source="properties">
-                    <SimpleFormIterator fullWidth inline>
-                        <TextInput fullWidth source="name" />
-                        <TextInput fullWidth source="description" />
-                        <ArrayInput source="forms">
-                            <SimpleFormIterator fullWidth inline>
-                                <TextInput sx={{ flex: 1 }} source="href" label="Target" />
-                                <BooleanInput source="public" />
-                            </SimpleFormIterator>
-                        </ArrayInput>
-                    </SimpleFormIterator>
-                </ArrayInput>
-                <ArrayInput source="actions">
-                    <SimpleFormIterator fullWidth inline>
-                        <TextInput fullWidth source="name" />
-                        <TextInput fullWidth source="description" />
-                        <ArrayInput source="forms">
-                            <SimpleFormIterator fullWidth inline>
-                                <TextInput sx={{ flex: 1 }} source="href" label="Target" />
-                                <BooleanInput source="public" />
-                            </SimpleFormIterator>
-                        </ArrayInput>
-                    </SimpleFormIterator>
-                </ArrayInput>
-                <ArrayInput source="events">
-                    <SimpleFormIterator fullWidth inline>
-                        <TextInput fullWidth source="name" />
-                        <TextInput fullWidth source="description" />
-                        <ArrayInput source="forms">
-                            <SimpleFormIterator fullWidth inline>
-                                <TextInput sx={{ flex: 1 }} source="href" label="Target" />
-                                <BooleanInput source="public" />
-                            </SimpleFormIterator>
-                        </ArrayInput>
-                    </SimpleFormIterator>
-                </ArrayInput>
+                <ThingDescriptionEditor />
             </SimpleForm>
         </Edit>
     );
 };
 
-export const ThingCreate = () => (
+const ThingDescriptionCreateEditor = () => {
+    const { field } = useInput({ source: "description" });
+    return (
+        <CodeMirror
+            {...field}
+            extensions={[json()]}
+            basicSetup={{
+                lineNumbers: true,
+                foldGutter: true,
+            }}
+            width="100%"
+            minHeight="400px"
+            style={{ 
+                width: "100%",
+                minHeight: "400px",
+            }}
+        />
+    );
+}
+
+export const ThingDescriptionCreate = () => (
     <Create redirect="show">
         <SimpleForm>
-            <FileInput source="attachments" accept="application/json">
-                <FileField source="src" title="title" />
-            </FileInput>
+            <ThingDescriptionCreateEditor />
         </SimpleForm>
     </Create>
 );

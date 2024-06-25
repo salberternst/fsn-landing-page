@@ -20,7 +20,7 @@ import dataSource from "./data-source";
 import authProvider from "./auth-provider";
 import { SparqlPage } from "./custom_pages/sparql";
 import Thingsboard from "./components/thingsboard";
-import { ThingCreate, ThingEdit, ThingList, ThingShow } from "./components/thing_description";
+import { ThingDescriptionCreate, ThingDescriptionEdit, ThingDescriptionList, ThingDescriptionShow } from "./components/thing_description";
 import { AssetCreate, AssetShow, AssetsList } from "./components/assets";
 
 const CustomUserMenu = () => {
@@ -87,9 +87,10 @@ export const App = () => (
       name="thingDescriptions"
       options={{ label: "Thing Descriptions" }}
       icon={DeviceHub}
-      list={ThingList}
-      show={ThingShow}
-      create={ThingCreate}
+      list={ThingDescriptionList}
+      show={ThingDescriptionShow}
+      create={ThingDescriptionCreate}
+      edit={ThingDescriptionEdit}
     />
     <Resource
       name="assets"
@@ -99,6 +100,5 @@ export const App = () => (
       show={AssetShow}
       create={AssetCreate}  
     />
-    <Resource name="thingCredentials" icon={DeviceHub} edit={ThingEdit} />
   </Admin>
 );

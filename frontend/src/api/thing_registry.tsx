@@ -7,10 +7,10 @@ import { HttpError } from "react-admin";
  * @returns A Promise that resolves to the fetched things.
  * @throws {HttpError} If the API response is not successful.
  */
-export const fetchThings = async (pagination: any) => {
+export const fetchThings = async (pagination: any, sort: any) => {
   const { page, perPage }: { page: number; perPage: number } = pagination;
   const response = await fetch(
-    `/api/registry/things?page=${page}&page_size=${perPage}`
+    `/api/registry/things?page=${page}&page_size=${perPage}&sort_order=${sort.order.toLowerCase()}&sort_by=${sort.field}`,
   );
 
   const json = await response.json();
@@ -39,25 +39,21 @@ export const fetchThing = async (id: string) => {
   return json;
 };
 
-export const fetchThingCredentials = async (id: string, security: string) => {
-  const response = await fetch(
-    `/api/registry/things/${id}/${security}/credentials`
-  );
 
-  const json = await response.json();
-  if (response.ok === false) {
-    throw new HttpError(json.message, response.status);
-  }
-
-  return json;
-};
-
-export const updateThing = async (thing: any) => {
-  const response = await fetch(`/api/registry/things/${thing.id}`, {
+/**
+ * Updates a thing in the registry.
+ *
+ * @param {string} id - The ID of the thing to update.
+ * @param {any} thing - The updated thing object.
+ * @returns {Promise<any>} - A promise that resolves to the updated thing object.
+ * @throws {HttpError} - If the HTTP response is not successful.
+ */
+export const updateThing = async (id: string, thing: any): Promise<any> => {
+  const response = await fetch(`/api/registry/things/${id}`, {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(thing),
+    body: thing,
     method: "PUT",
   });
 
@@ -68,6 +64,12 @@ export const updateThing = async (thing: any) => {
   return thing;
 };
 
+
+/**
+ * Deletes a thing from the registry.
+ * @param {any} id - The ID of the thing to delete.
+ * @throws {HttpError} If the delete request fails.
+ */
 export const deleteThing = async (id: any) => {
   const response = await fetch(`/api/registry/things/${id}`, {
     headers: {
@@ -81,12 +83,18 @@ export const deleteThing = async (id: any) => {
   }
 };
 
-export const createThing = async (thing: any) => {
+/**
+ * Creates a new thing in the registry.
+ * @param {any} thing - The thing object to be created.
+ * @returns {Promise<any>} - A promise that resolves to the created thing.
+ * @throws {HttpError} - If the response status is not ok.
+ */
+export const createThing = async (thing: any): Promise<any> => {
   const response = await fetch(`/api/registry/things`, {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(thing),
+    body: thing,
     method: "POST",
   });
 

@@ -28,8 +28,8 @@ export const AssetsList = () => (
     <List empty={false} hasCreate={true} exporter={false}>
         <Datagrid bulkActionButtons={false} rowClick="show">
             <TextField source="id" />
-            <TextField source="properties.name" />
-            <TextField source="dataAddress.type" />
+            <TextField source="properties.name" label="Name" />
+            <TextField source="dataAddress.type" label="Data Address Type"/>
         </Datagrid>
     </List>
 );
