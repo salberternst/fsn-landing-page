@@ -1,3 +1,4 @@
+import { createAsset, deleteAsset, fetchAsset, fetchAssets } from "./api/assets";
 import { createThing, deleteThing, fetchThing, fetchThingCredentials, fetchThings, updateThing } from "./api/thing_registry";
 
 export default {
@@ -8,18 +9,17 @@ export default {
         data: result.things,
         total: result.totalPages * result.pageSize,
       };
-    }
-  },
-  getMany: async (resource: any, params: any) => {
-    if (resource === "thingCredentials") {
-      const result = await Promise.all(
-        params.ids.map((id) => fetchThingCredentials(params.meta.thingId, id))
-      );
-      console.log(result);
+    } else if(resource === "assets") {
+      const assets = await fetchAssets(params.pagination);
       return {
-        data: result.map((_, index) => ({
-          id: params.ids[index],
+        data: assets.map(asset => ({
+          ...asset,
+          id: asset['@id'],
         })),
+        pageInfo: {
+          hasNextPage: assets.length === params.pagination.perPage,
+          hasPreviousPage: params.pagination.page > 1,
+        }
       };
     }
   },
@@ -57,6 +57,14 @@ export default {
             id: description.id + name,
           })),
         },
+      };
+    } else if (resource === "assets") {
+      const asset = await fetchAsset(params.id);
+      return {
+        data: {
+          ...asset,
+          id: asset['@id'],
+        }
       };
     }
   },
@@ -107,7 +115,7 @@ export default {
       };
     }
   },
-  create: (resource: any, params: any) => {
+  create: async (resource: any, params: any) => {
     if (resource === "thingDescriptions") {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -118,11 +126,32 @@ export default {
         };
         reader.readAsText(params.data.attachments.rawFile);
       });
+    } else if (resource === "assets") {
+      await createAsset({ 
+        ...params.data,
+        "@context": {
+          "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+        },
+      });
+
+      return {
+        data: { 
+          ...params.data,
+          id: params.data['@id'],
+        }
+      };
     }
   },
   delete: async (resource: any, params: any) => {
     if (resource === "thingDescriptions") {
       await deleteThing(params.id);
+      return {
+        data: {
+          id: params.id,
+        },
+      };
+    } else if (resource === "assets") {
+      await deleteAsset(params.id);
       return {
         data: {
           id: params.id,

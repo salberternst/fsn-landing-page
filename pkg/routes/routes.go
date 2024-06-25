@@ -13,4 +13,5 @@ func AddRoutes(r *gin.Engine) {
 	// only use the middlewares in the api group
 	api.Use(middleware.TokenMiddleware())
 	addUserRoutes(api)
+	addAssetsRoutes(api)
 }

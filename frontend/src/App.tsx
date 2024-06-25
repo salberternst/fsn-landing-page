@@ -15,13 +15,13 @@ import DeviceHub from "@mui/icons-material/DeviceHub";
 import QueryStatsIcon from "@mui/icons-material/QueryStats";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import DevicesIcon from '@mui/icons-material/Devices';
 import { useLocation } from "react-router-dom";
 import dataSource from "./data-source";
 import authProvider from "./auth-provider";
 import { SparqlPage } from "./custom_pages/sparql";
 import Thingsboard from "./components/thingsboard";
 import { ThingCreate, ThingEdit, ThingList, ThingShow } from "./components/thing_description";
+import { AssetCreate, AssetShow, AssetsList } from "./components/assets";
 
 const CustomUserMenu = () => {
   const { isLoading, identity } = useGetIdentity();
@@ -95,17 +95,9 @@ export const App = () => (
       name="assets"
       options={{ label: "Assets" }}
       icon={AccountBalanceIcon}
-      list={ThingList}
-      show={ThingShow}
-      create={ThingCreate}
-    />
-    <Resource
-      name="devices"
-      options={{ label: "Devices" }}
-      icon={DevicesIcon}
-      list={ThingList}
-      show={ThingShow}
-      create={ThingCreate}
+      list={AssetsList}
+      show={AssetShow}
+      create={AssetCreate}  
     />
     <Resource name="thingCredentials" icon={DeviceHub} edit={ThingEdit} />
   </Admin>
