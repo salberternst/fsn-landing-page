@@ -72,8 +72,16 @@ export const CustomerShow = () => {
             label="Address"
             defaultValue="-"
           />
-          <TextField source="thingsboard.phone" label="Phone" defaultValue="-" />
-          <TextField source="thingsboard.email" label="Email" defaultValue="-" />
+          <TextField
+            source="thingsboard.phone"
+            label="Phone"
+            defaultValue="-"
+          />
+          <TextField
+            source="thingsboard.email"
+            label="Email"
+            defaultValue="-"
+          />
           <TextField source="thingsboard.zip" label="ZIP" defaultValue="-" />
         </SimpleShowLayout>
       )}
@@ -95,7 +103,7 @@ export const CustomerCreate = () => {
   return (
     <Create>
       <SimpleForm>
-        <TextInput source="name" label="Name" fullWidth required/>
+        <TextInput source="name" label="Name" fullWidth required />
         <TextInput source="description" label="Description" fullWidth />
       </SimpleForm>
     </Create>

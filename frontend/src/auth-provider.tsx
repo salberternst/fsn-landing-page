@@ -22,7 +22,6 @@ const authProvider = {
     return fetchUserInfo();
   },
   getPermissions: () => Promise.resolve(""),
-
 };
 
 export default authProvider;

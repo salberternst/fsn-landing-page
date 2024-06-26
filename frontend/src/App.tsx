@@ -15,7 +15,7 @@ import DeviceHub from "@mui/icons-material/DeviceHub";
 import QueryStatsIcon from "@mui/icons-material/QueryStats";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
-import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
+import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
 import GroupsIcon from "@mui/icons-material/Groups";
 import { useLocation } from "react-router-dom";
 import dataSource from "./data-source";
