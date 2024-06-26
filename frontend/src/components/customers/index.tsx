@@ -12,13 +12,16 @@ import {
   SimpleForm,
   EditButton,
   Edit,
+  useShowController,
 } from "react-admin";
+import Divider from "@mui/material/Divider";
+import Alert from "@mui/material/Alert";
 
 const CustomerShowBar = () => {
   return (
     <TopToolbar>
       <EditButton />
-      <DeleteButton />
+      <DeleteButton mutationMode="pessimistic" />
     </TopToolbar>
   );
 };
@@ -34,6 +37,9 @@ export const CustomersList = () => (
 );
 
 export const CustomerShow = () => {
+  const { record, isLoading } = useShowController();
+  if (isLoading) return null;
+
   return (
     <Show actions={<CustomerShowBar />}>
       <SimpleShowLayout>
@@ -47,6 +53,40 @@ export const CustomerShow = () => {
           <TextField source="description" />
         </Labeled>
       </SimpleShowLayout>
+      <Divider>Thingsboard</Divider>
+      {record.thingsboard.error !== undefined && (
+        <Alert severity="error">{record.thingsboard.error}</Alert>
+      )}
+      {record.thingsboard.error === undefined && (
+        <SimpleShowLayout>
+          <TextField source="thingsboard.id" label="ID" />
+          <TextField source="thingsboard.title" label="Title" />
+          <TextField
+            source="thingsboard.country"
+            label="Country"
+            defaultValue="-"
+          />
+          <TextField source="thingsboard.city" label="City" defaultValue="-" />
+          <TextField
+            source="thingsboard.address"
+            label="Address"
+            defaultValue="-"
+          />
+          <TextField source="thingsboard.phone" label="Phone" defaultValue="-" />
+          <TextField source="thingsboard.email" label="Email" defaultValue="-" />
+          <TextField source="thingsboard.zip" label="ZIP" defaultValue="-" />
+        </SimpleShowLayout>
+      )}
+      <Divider>Fuseki</Divider>
+      {record.fuseki.error !== undefined && (
+        <Alert severity="error">{record.fuseki.error}</Alert>
+      )}
+      {record.fuseki.error === undefined && (
+        <SimpleShowLayout>
+          <TextField source="fuseki.name" label="Name" />
+          <TextField source="fuseki.state" label="State" />
+        </SimpleShowLayout>
+      )}
     </Show>
   );
 };

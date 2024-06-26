@@ -24,6 +24,7 @@ func TokenMiddleware() gin.HandlerFunc {
 		if err == nil {
 			if claims, ok := token.Claims.(*Claims); ok {
 				ctx.Set("access-token-claims", claims)
+				ctx.Set("access-token", idToken)
 				ctx.Next()
 				return
 			}

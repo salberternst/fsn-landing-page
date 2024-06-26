@@ -45,7 +45,11 @@ export default {
     } else if (resource === "customers") {
       const customers = await fetchCustomers(params.pagination);
       return {
-        data: customers,
+        data: customers.map((customer: any) => ({
+          ...customer,
+          thingsboard: {},
+          fuseki: {},
+        })),
         pageInfo: {
           hasNextPage: customers.length === params.pagination.perPage,
           hasPreviousPage: params.pagination.page > 1,
