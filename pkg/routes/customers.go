@@ -3,6 +3,7 @@ package routes
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/Nerzal/gocloak/v13"
 	"github.com/gin-gonic/gin"
@@ -39,7 +40,7 @@ type Customer struct {
 	Fuseki      *FusekiDataset       `json:"fuseki,omitempty"`
 }
 
-type UpdateCustomer struct {
+type CustomerUpdate struct {
 	Description string `json:"description"`
 }
 
@@ -51,28 +52,31 @@ type CustomerQuery struct {
 func getCustomers(ctx *gin.Context) {
 	customerQuery := CustomerQuery{}
 	if err := ctx.BindQuery(&customerQuery); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"status":  http.StatusBadRequest,
+			"error":   "invalid_request",
+			"message": err.Error(),
+		})
 		return
 	}
 
 	claims := ctx.MustGet("access-token-claims").(*middleware.Claims)
 	client := ctx.MustGet("keycloak-client").(*gocloak.GoCloak)
+	keycloakToken := ctx.MustGet("keycloak-token").(string)
 
 	// only show groups that have the tenant-id attribute set to the tenant-id of the user
 	tenantID := fmt.Sprintf("tenant-id:%s", claims.TenantId)
 	briefRepresentation := false
 
-	groups, err := client.GetGroups(ctx, ctx.MustGet("keycloak-token").(string), "dataspace", gocloak.GetGroupsParams{
+	groups, err := client.GetGroups(ctx, keycloakToken, "dataspace", gocloak.GetGroupsParams{
 		Q:                   &tenantID,
 		BriefRepresentation: &briefRepresentation,
 	})
-
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// forward only id and name
 	customers := make([]Customer, len(groups))
 	for i, group := range groups {
 		description := ""
@@ -99,6 +103,7 @@ func getCustomer(ctx *gin.Context) {
 	client := ctx.MustGet("keycloak-client").(*gocloak.GoCloak)
 	thingsboardApi := ctx.MustGet("thingsboard-api").(*api.ThingsboardAPI)
 	fusekiApi := ctx.MustGet("fuseki-api").(*api.FusekiAPI)
+	accessToken := ctx.MustGet("access-token").(string)
 
 	group, err := client.GetGroup(ctx, ctx.MustGet("keycloak-token").(string), "dataspace", customerID)
 	if err != nil {
@@ -139,8 +144,8 @@ func getCustomer(ctx *gin.Context) {
 		Name:        *group.Name,
 		Description: description,
 	}
-
-	thingsboardCustomer, err := thingsboardApi.GetCustomer(ctx.MustGet("access-token").(string), (*group.Attributes)["customer-id"][0])
+	thingsboardCustomerId := (*group.Attributes)["customer-id"][0]
+	thingsboardCustomer, err := thingsboardApi.GetCustomer(accessToken, thingsboardCustomerId)
 	if err != nil {
 		customer.Thingsboard = &ThingsboardCustomer{
 			Error: err.Error(),
@@ -161,7 +166,7 @@ func getCustomer(ctx *gin.Context) {
 		}
 	}
 
-	fusekiDataset, err := fusekiApi.GetDataset(claims.TenantId + "-" + (*group.Attributes)["customer-id"][0])
+	fusekiDataset, err := fusekiApi.GetDataset(claims.TenantId + "-" + thingsboardCustomerId)
 	if err != nil {
 		customer.Fuseki = &FusekiDataset{
 			Error: err.Error(),
@@ -179,7 +184,11 @@ func getCustomer(ctx *gin.Context) {
 func createCustomer(ctx *gin.Context) {
 	customer := Customer{}
 	if err := ctx.BindJSON(&customer); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"status":  http.StatusBadRequest,
+			"error":   "invalid_request",
+			"message": err.Error(),
+		})
 		return
 	}
 
@@ -187,46 +196,70 @@ func createCustomer(ctx *gin.Context) {
 	client := ctx.MustGet("keycloak-client").(*gocloak.GoCloak)
 	thingsboardApi := ctx.MustGet("thingsboard-api").(*api.ThingsboardAPI)
 	fusekiApi := ctx.MustGet("fuseki-api").(*api.FusekiAPI)
+	accessToken := ctx.MustGet("access-token").(string)
+	keycloakToken := ctx.MustGet("keycloak-token").(string)
 
-	createdCustomer, err := thingsboardApi.CreateCustomer(ctx.MustGet("access-token").(string), api.ThingsboardCustomer{
+	createdThingsboardCustomer, err := thingsboardApi.CreateCustomer(accessToken, api.ThingsboardCustomer{
 		Name:  customer.Name,
 		Title: customer.Name,
 	})
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_create_thingsboard_customer",
+			"message": err.Error(),
+		})
 		return
 	}
 
-	err = fusekiApi.CreateDataset(claims.TenantId + "-" + createdCustomer.Id.ID)
+	err = fusekiApi.CreateDataset(claims.TenantId + "-" + createdThingsboardCustomer.Id.ID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_create_fuseki_dataset",
+			"message": err.Error(),
+		})
 		return
 	}
 
-	id, err := client.CreateGroup(ctx, ctx.MustGet("keycloak-token").(string), "dataspace", gocloak.Group{
+	id, err := client.CreateGroup(ctx, keycloakToken, "dataspace", gocloak.Group{
 		Name: &customer.Name,
 		Attributes: &map[string][]string{
 			"tenant-id":   {claims.TenantId},
-			"customer-id": {createdCustomer.Id.ID},
+			"customer-id": {createdThingsboardCustomer.Id.ID},
 			"description": {customer.Description},
+			"created-by":  {claims.Email},
+			"created-at":  {time.Now().String()},
 		},
 	})
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_create_keycloak_group",
+			"message": err.Error(),
+		})
 		return
 	}
 
-	role, err := client.GetRealmRole(ctx, ctx.MustGet("keycloak-token").(string), "dataspace", "customer")
+	role, err := client.GetRealmRole(ctx, keycloakToken, "dataspace", "customer")
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_get_keycloak_role",
+			"message": err.Error(),
+		})
 		return
 	}
 
-	err = client.AddRealmRoleToGroup(ctx, ctx.MustGet("keycloak-token").(string), "dataspace", id, []gocloak.Role{
+	err = client.AddRealmRoleToGroup(ctx, keycloakToken, "dataspace", id, []gocloak.Role{
 		*role,
 	})
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_add_keycloak_role_to_group",
+			"message": err.Error(),
+		})
 		return
 	}
 
@@ -242,6 +275,8 @@ func deleteCustomer(ctx *gin.Context) {
 	client := ctx.MustGet("keycloak-client").(*gocloak.GoCloak)
 	thingsboardApi := ctx.MustGet("thingsboard-api").(*api.ThingsboardAPI)
 	fusekiApi := ctx.MustGet("fuseki-api").(*api.FusekiAPI)
+	accessToken := ctx.MustGet("access-token").(string)
+	keycloakToken := ctx.MustGet("keycloak-token").(string)
 
 	group, err := client.GetGroup(ctx, ctx.MustGet("keycloak-token").(string), "dataspace", customerID)
 	if err != nil {
@@ -260,21 +295,34 @@ func deleteCustomer(ctx *gin.Context) {
 		return
 	}
 
-	err = thingsboardApi.DeleteCustomer(ctx.MustGet("access-token").(string), (*group.Attributes)["customer-id"][0])
+	thingsboardCustomerId := (*group.Attributes)["customer-id"][0]
+	err = thingsboardApi.DeleteCustomer(accessToken, thingsboardCustomerId)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_delete_thingsboard_customer",
+			"message": err.Error(),
+		})
 		return
 	}
 
-	err = client.DeleteGroup(ctx, ctx.MustGet("keycloak-token").(string), "dataspace", customerID)
+	err = client.DeleteGroup(ctx, keycloakToken, "dataspace", customerID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_delete_keycloak_group",
+			"message": err.Error(),
+		})
 		return
 	}
 
-	err = fusekiApi.DeleteDataset(claims.TenantId + "-" + (*group.Attributes)["customer-id"][0])
+	err = fusekiApi.DeleteDataset(claims.TenantId + "-" + thingsboardCustomerId)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_delete_fuseki_dataset",
+			"message": err.Error(),
+		})
 		return
 	}
 
@@ -287,19 +335,21 @@ func deleteCustomer(ctx *gin.Context) {
 func updateCustomer(ctx *gin.Context) {
 	customerID := ctx.Param("id")
 
-	updateCustomer := UpdateCustomer{}
+	updateCustomer := CustomerUpdate{}
 	if err := ctx.BindJSON(&updateCustomer); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	client := ctx.MustGet("keycloak-client").(*gocloak.GoCloak)
+	keycloakToken := ctx.MustGet("keycloak-token").(string)
 
-	group, err := client.GetGroup(ctx, ctx.MustGet("keycloak-token").(string), "dataspace", customerID)
+	group, err := client.GetGroup(ctx, keycloakToken, "dataspace", customerID)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{
-			"message": "customer not found",
 			"status":  http.StatusNotFound,
+			"error":   "customer_not_found",
+			"message": fmt.Sprintf("customer with id %s not found", customerID),
 		})
 		return
 	}
@@ -314,9 +364,13 @@ func updateCustomer(ctx *gin.Context) {
 		(*group.Attributes)["description"][0] = updateCustomer.Description
 	}
 
-	err = client.UpdateGroup(ctx, ctx.MustGet("keycloak-token").(string), "dataspace", *group)
+	err = client.UpdateGroup(ctx, keycloakToken, "dataspace", *group)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_update_customer",
+			"message": err.Error(),
+		})
 		return
 	}
 

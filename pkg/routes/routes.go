@@ -19,4 +19,5 @@ func AddRoutes(r *gin.Engine) {
 	addUserRoutes(api)
 	addAssetsRoutes(api)
 	addCustomersRoutes(api)
+	addUsersRoute(api)
 }

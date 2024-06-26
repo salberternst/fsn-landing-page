@@ -18,6 +18,7 @@ import {
   fetchThings,
   updateThing,
 } from "./api/thing_registry";
+import { fetchUsers, fetchUser } from "./api/users";
 
 export default {
   getList: async (resource: any, params: any) => {
@@ -55,6 +56,15 @@ export default {
           hasPreviousPage: params.pagination.page > 1,
         },
       };
+    } else if (resource === "users") {
+      const users = await fetchUsers(params.pagination);
+      return {
+        data: users,
+        pageInfo: {
+          hasNextPage: users.length === params.pagination.perPage,
+          hasPreviousPage: params.pagination.page > 1,
+        },
+      };
     }
   },
   getOne: async (resource: any, params: any) => {
@@ -79,6 +89,11 @@ export default {
       const customer = await fetchCustomer(params.id);
       return {
         data: customer,
+      };
+    } else if (resource === "users") {
+      const user = await fetchUser(params.id);
+      return {
+        data: user,
       };
     }
   },

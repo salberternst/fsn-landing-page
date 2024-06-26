@@ -7,6 +7,12 @@ async function fetchUserInfo() {
   };
 }
 
+async function fetchAuth() {
+  const response = await fetch("/user/auth");
+  const auth = await response.json();
+  return auth;
+}
+
 const authProvider = {
   checkAuth: () => Promise.resolve(),
   checkError: () => {
@@ -16,6 +22,7 @@ const authProvider = {
     return fetchUserInfo();
   },
   getPermissions: () => Promise.resolve(""),
+
 };
 
 export default authProvider;

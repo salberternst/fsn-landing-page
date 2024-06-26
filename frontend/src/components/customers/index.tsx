@@ -95,8 +95,8 @@ export const CustomerCreate = () => {
   return (
     <Create>
       <SimpleForm>
-        <TextInput source="name" label="Name" />
-        <TextInput source="description" label="Description" />
+        <TextInput source="name" label="Name" fullWidth required/>
+        <TextInput source="description" label="Description" fullWidth />
       </SimpleForm>
     </Create>
   );

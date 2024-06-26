@@ -189,7 +189,7 @@ export const ThingDescriptionShowDescription = () => {
   const record = useRecordContext();
   return (
     <CodeMirror
-      value={JSON.stringify(record, null, 4)}
+      value={JSON.stringify(record.description, null, 4)}
       extensions={[json(), EditorState.readOnly.of(true)]}
       basicSetup={{
         lineNumbers: false,

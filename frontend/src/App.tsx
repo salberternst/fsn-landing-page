@@ -15,6 +15,7 @@ import DeviceHub from "@mui/icons-material/DeviceHub";
 import QueryStatsIcon from "@mui/icons-material/QueryStats";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
 import GroupsIcon from "@mui/icons-material/Groups";
 import { useLocation } from "react-router-dom";
 import dataSource from "./data-source";
@@ -34,6 +35,7 @@ import {
   CustomersList,
   CustomerUpdate,
 } from "./components/customers";
+import { UserShow, UsersList } from "./components/users";
 
 const CustomUserMenu = () => {
   const { isLoading, identity } = useGetIdentity();
@@ -44,7 +46,7 @@ const CustomUserMenu = () => {
 
   return (
     <>
-      <Typography variant="button">{identity.fullName}</Typography>
+      <Typography variant="button">{identity?.fullName}</Typography>
     </>
   );
 };
@@ -57,6 +59,7 @@ const CustomMenu = () => (
     <Menu.ResourceItem name="thingDescriptions" />
     <Menu.ResourceItem name="devices" />
     <Menu.ResourceItem name="customers" />
+    <Menu.ResourceItem name="users" />
     <Menu.Item to="/sparql" primaryText="Query" leftIcon={<QueryStatsIcon />} />
     <Divider />
     <Menu.Item
@@ -121,6 +124,13 @@ export const App = () => (
       show={CustomerShow}
       create={CustomerCreate}
       edit={CustomerUpdate}
+    />
+    <Resource
+      name="users"
+      options={{ label: "Users" }}
+      icon={PeopleOutlineIcon}
+      list={UsersList}
+      show={UserShow}
     />
   </Admin>
 );
