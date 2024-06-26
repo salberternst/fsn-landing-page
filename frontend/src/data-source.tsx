@@ -1,11 +1,16 @@
-import { create } from "domain";
 import {
   createAsset,
   deleteAsset,
   fetchAsset,
   fetchAssets,
 } from "./api/assets";
-import { createCustomer, deleteCustomer, fetchCustomer, fetchCustomers, updateCustomer } from "./api/customers";
+import {
+  createCustomer,
+  deleteCustomer,
+  fetchCustomer,
+  fetchCustomers,
+  updateCustomer,
+} from "./api/customers";
 import {
   createThing,
   deleteThing,
@@ -86,9 +91,9 @@ export default {
         },
       };
     } else if (resource === "customers") {
-      const updatedCustomer = await  updateCustomer(params.id, params.data);
+      const updatedCustomer = await updateCustomer(params.id, params.data);
       return {
-        data: updatedCustomer
+        data: updatedCustomer,
       };
     }
   },
@@ -118,7 +123,7 @@ export default {
     } else if (resource === "customers") {
       const customer = await createCustomer(params.data);
       return {
-        data: customer
+        data: customer,
       };
     }
   },
@@ -142,8 +147,8 @@ export default {
       return {
         data: {
           id: params.id,
-        }
-      }
+        },
+      };
     }
   },
 };

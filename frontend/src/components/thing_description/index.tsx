@@ -24,10 +24,15 @@ import { EditorState } from "@codemirror/state";
 import lzs from "lz-string";
 
 export const ThingDescriptionList = () => (
-  <List empty={false} hasCreate={true} exporter={false} sort={{
-    field: "createdAt",
-    order: "DESC"
-  }}>
+  <List
+    empty={false}
+    hasCreate={true}
+    exporter={false}
+    sort={{
+      field: "createdAt",
+      order: "DESC",
+    }}
+  >
     <Datagrid bulkActionButtons={false} rowClick="show">
       <TextField source="id" sortable={false} />
       <DateField showTime={true} source="createdAt" label="Created At" />

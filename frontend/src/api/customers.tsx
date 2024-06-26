@@ -24,7 +24,7 @@ export const fetchCustomers = async (pagination: any) => {
   }
 
   return json;
-}
+};
 
 /**
  * Fetches a customer by their ID from the API.
@@ -46,8 +46,7 @@ export const fetchCustomer = async (id: string) => {
   }
 
   return json;
-}
-
+};
 
 /**
  * Deletes a customer with the specified ID.
@@ -69,7 +68,7 @@ export const deleteCustomer = async (id: string): Promise<any> => {
   }
 
   return json;
-}
+};
 
 /**
  * Creates a new customer by sending a POST request to the server.
@@ -92,7 +91,7 @@ export const createCustomer = async (data: any) => {
   }
 
   return json;
-}
+};
 
 /**
  * Updates a customer by sending a PUT request to the server.
@@ -116,4 +115,4 @@ export const updateCustomer = async (id: string, data: any) => {
   }
 
   return json;
-}
+};

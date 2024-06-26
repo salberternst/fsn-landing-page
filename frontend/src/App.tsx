@@ -28,7 +28,12 @@ import {
   ThingDescriptionShow,
 } from "./components/thing_description";
 import { AssetCreate, AssetShow, AssetsList } from "./components/assets";
-import { CustomerCreate, CustomerShow, CustomersList, CustomerUpdate } from "./components/customers";
+import {
+  CustomerCreate,
+  CustomerShow,
+  CustomersList,
+  CustomerUpdate,
+} from "./components/customers";
 
 const CustomUserMenu = () => {
   const { isLoading, identity } = useGetIdentity();
