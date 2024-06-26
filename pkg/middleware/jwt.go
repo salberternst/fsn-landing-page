@@ -9,8 +9,9 @@ import (
 )
 
 type Claims struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	TenantId string `json:"tenant_id"`
 	jwt.RegisteredClaims
 }
 
@@ -18,8 +19,6 @@ func TokenMiddleware() gin.HandlerFunc {
 	parser := jwt.NewParser()
 
 	return func(ctx *gin.Context) {
-		println("TokenMiddleware")
-		println(ctx.GetHeader("X-Access-Token"))
 		idToken := ctx.GetHeader("X-Access-Token")
 		token, _, err := parser.ParseUnverified(idToken, &Claims{})
 		if err == nil {
@@ -29,6 +28,6 @@ func TokenMiddleware() gin.HandlerFunc {
 				return
 			}
 		}
-		ctx.AbortWithError(http.StatusInternalServerError, errors.New("Unable to decode X-Access-Token"))
+		ctx.AbortWithError(http.StatusInternalServerError, errors.New("unable to decode X-Access-Token"))
 	}
 }

@@ -15,6 +15,7 @@ import DeviceHub from "@mui/icons-material/DeviceHub";
 import QueryStatsIcon from "@mui/icons-material/QueryStats";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import GroupsIcon from "@mui/icons-material/Groups";
 import { useLocation } from "react-router-dom";
 import dataSource from "./data-source";
 import authProvider from "./auth-provider";
@@ -27,6 +28,7 @@ import {
   ThingDescriptionShow,
 } from "./components/thing_description";
 import { AssetCreate, AssetShow, AssetsList } from "./components/assets";
+import { CustomerCreate, CustomerShow, CustomersList, CustomerUpdate } from "./components/customers";
 
 const CustomUserMenu = () => {
   const { isLoading, identity } = useGetIdentity();
@@ -49,6 +51,7 @@ const CustomMenu = () => (
     <Menu.ResourceItem name="assets" />
     <Menu.ResourceItem name="thingDescriptions" />
     <Menu.ResourceItem name="devices" />
+    <Menu.ResourceItem name="customers" />
     <Menu.Item to="/sparql" primaryText="Query" leftIcon={<QueryStatsIcon />} />
     <Divider />
     <Menu.Item
@@ -104,6 +107,15 @@ export const App = () => (
       list={AssetsList}
       show={AssetShow}
       create={AssetCreate}
+    />
+    <Resource
+      name="customers"
+      options={{ label: "Customers" }}
+      icon={GroupsIcon}
+      list={CustomersList}
+      show={CustomerShow}
+      create={CustomerCreate}
+      edit={CustomerUpdate}
     />
   </Admin>
 );

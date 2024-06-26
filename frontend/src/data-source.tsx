@@ -1,9 +1,11 @@
+import { create } from "domain";
 import {
   createAsset,
   deleteAsset,
   fetchAsset,
   fetchAssets,
 } from "./api/assets";
+import { createCustomer, deleteCustomer, fetchCustomer, fetchCustomers, updateCustomer } from "./api/customers";
 import {
   createThing,
   deleteThing,
@@ -35,6 +37,15 @@ export default {
           hasPreviousPage: params.pagination.page > 1,
         },
       };
+    } else if (resource === "customers") {
+      const customers = await fetchCustomers(params.pagination);
+      return {
+        data: customers,
+        pageInfo: {
+          hasNextPage: customers.length === params.pagination.perPage,
+          hasPreviousPage: params.pagination.page > 1,
+        },
+      };
     }
   },
   getOne: async (resource: any, params: any) => {
@@ -55,6 +66,11 @@ export default {
           id: asset["@id"],
         },
       };
+    } else if (resource === "customers") {
+      const customer = await fetchCustomer(params.id);
+      return {
+        data: customer,
+      };
     }
   },
   update: async (resource: any, params: any) => {
@@ -68,6 +84,11 @@ export default {
           id: updatedThing.id,
           description: updatedThing,
         },
+      };
+    } else if (resource === "customers") {
+      const updatedCustomer = await  updateCustomer(params.id, params.data);
+      return {
+        data: updatedCustomer
       };
     }
   },
@@ -94,6 +115,11 @@ export default {
           id: params.data["@id"],
         },
       };
+    } else if (resource === "customers") {
+      const customer = await createCustomer(params.data);
+      return {
+        data: customer
+      };
     }
   },
   delete: async (resource: any, params: any) => {
@@ -111,6 +137,13 @@ export default {
           id: params.id,
         },
       };
+    } else if (resource === "customers") {
+      await deleteCustomer(params.id);
+      return {
+        data: {
+          id: params.id,
+        }
+      }
     }
   },
 };
