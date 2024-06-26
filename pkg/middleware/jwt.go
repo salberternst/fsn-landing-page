@@ -29,6 +29,7 @@ func TokenMiddleware() gin.HandlerFunc {
 				return
 			}
 		}
+
 		ctx.AbortWithError(http.StatusInternalServerError, errors.New("unable to decode X-Access-Token"))
 	}
 }
