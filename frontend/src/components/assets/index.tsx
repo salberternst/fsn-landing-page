@@ -80,7 +80,6 @@ export const AssetCreate = () => {
   return (
     <Create>
       <SimpleForm>
-        <TextInput source="@id" label="ID" fullWidth required />
         <TextInput
           source="properties.name"
           label="Asset Name"

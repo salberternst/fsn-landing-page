@@ -1,19 +1,14 @@
 import {
-  Labeled,
   List,
   Datagrid,
   TextField,
   Show,
-  TabbedShowLayout,
-  Tab,
   SimpleShowLayout,
   TopToolbar,
   DeleteButton,
   Create,
   TextInput,
   SimpleForm,
-  BooleanInput,
-  BooleanField,
   ArrayInput,
   SimpleFormIterator,
   SelectInput,
@@ -25,7 +20,7 @@ import Grid from "@mui/material/Grid";
 const PolicyShowBar = () => {
   return (
     <TopToolbar>
-      <DeleteButton mutationMode="pessimistic"/>
+      <DeleteButton mutationMode="pessimistic" />
     </TopToolbar>
   );
 };
@@ -35,7 +30,7 @@ export const PoliciesList = () => (
     <Datagrid bulkActionButtons={false} rowClick="show">
       <TextField source="id" />
       <TextField source="privateProperties.name" label="Name" />
-      <DateField showTime={true} source="createdAt" label="Created At"  />
+      <DateField showTime={true} source="createdAt" label="Created At" />
     </Datagrid>
   </List>
 );
@@ -55,18 +50,31 @@ export const PolicyCreate = (props: any) => (
     <SimpleForm>
       <Grid container spacing={2}>
         <Grid item xs={3}>
-          <SelectInput source="policy.@type" label="Type" choices={[
-            { id: "odrl:Set", name: "Set" }
-            ]}
+          <SelectInput
+            source="policy.@type"
+            label="Type"
+            choices={[{ id: "odrl:Set", name: "Set" }]}
             fullWidth
-            helperText="lorem ipsum" 
-            required/>
+            helperText="lorem ipsum"
+            required
+          />
         </Grid>
         <Grid item xs={9}>
-          <TextInput source="privateProperties.name" label="Name" required fullWidth />
+          <TextInput
+            source="privateProperties.name"
+            label="Name"
+            required
+            fullWidth
+          />
         </Grid>
       </Grid>
-      <TextInput source="privateProperties.description" label="Description" fullWidth multiline rows={3}/>
+      <TextInput
+        source="privateProperties.description"
+        label="Description"
+        fullWidth
+        multiline
+        rows={3}
+      />
       <Divider>Permissions</Divider>
       <ArrayInput source="policy.odrl:permissions">
         <SimpleFormIterator inline>

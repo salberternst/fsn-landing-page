@@ -89,6 +89,15 @@ type PolicyDefinition struct {
 	PrivateProperties map[string]interface{} `json:"privateProperties,omitempty"`
 }
 
+type Asset struct {
+	Context           *interface{}      `json:"@context"`
+	Id                string            `json:"@id,omitempty"`
+	Type              string            `json:"@type,omitempty"`
+	DataAddress       map[string]string `json:"dataAddress"`
+	PrivateProperties map[string]string `json:"privateProperties,omitempty"`
+	Properties        map[string]string `json:"properties"`
+}
+
 func NewEdcAPI() *EdcAPI {
 	return &EdcAPI{
 		client: resty.New(),
@@ -161,6 +170,77 @@ func (e *EdcAPI) DeletePolicy(id string) error {
 
 	if resp.StatusCode() != 204 {
 		return fmt.Errorf("unable to delete policy: %s", resp.String())
+	}
+
+	return nil
+}
+
+func (e *EdcAPI) GetAssets(querySpec QuerySpec) ([]Asset, error) {
+	var assets []Asset
+	resp, err := e.client.R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(querySpec).
+		SetResult(&assets).
+		Post("http://edc-provider:19193/management/v3/assets/request")
+
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode() != 200 {
+		return nil, fmt.Errorf("unable to get assets: %s", resp.String())
+	}
+
+	return assets, nil
+}
+
+func (e *EdcAPI) GetAsset(id string) (*Asset, error) {
+	asset := Asset{}
+	resp, err := e.client.R().
+		SetHeader("Content-Type", "application/json").
+		SetResult(&asset).
+		Get("http://edc-provider:19193/management/v3/assets/" + id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode() != 200 {
+		return nil, fmt.Errorf("unable to get asset: %s", resp.String())
+	}
+
+	return &asset, nil
+}
+
+func (e *EdcAPI) CreateAsset(asset Asset) (*Asset, error) {
+	resp, err := e.client.R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(asset).
+		SetResult(&asset).
+		Post("http://edc-provider:19193/management/v3/assets")
+
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode() != 200 {
+		return nil, fmt.Errorf("unable to create asset: %s", resp.String())
+	}
+
+	return &asset, nil
+}
+
+func (e *EdcAPI) DeleteAsset(id string) error {
+	resp, err := e.client.R().
+		SetHeader("Content-Type", "application/json").
+		Delete("http://edc-provider:19193/management/v3/assets/" + id)
+
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode() != 204 {
+		return fmt.Errorf("unable to delete asset: %s", resp.String())
 	}
 
 	return nil

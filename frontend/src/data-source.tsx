@@ -11,7 +11,12 @@ import {
   fetchCustomers,
   updateCustomer,
 } from "./api/customers";
-import { createPolicy, deletePolicy, fetchPolicies, fetchPolicy } from "./api/policies";
+import {
+  createPolicy,
+  deletePolicy,
+  fetchPolicies,
+  fetchPolicy,
+} from "./api/policies";
 import {
   createThing,
   deleteThing,
@@ -56,7 +61,7 @@ export default {
           hasNextPage: customers.length === params.pagination.perPage,
           hasPreviousPage: params.pagination.page > 1,
         },
-      }
+      };
     } else if (resource === "users") {
       const users = await fetchUsers(params.pagination);
       return {
@@ -165,20 +170,20 @@ export default {
         data: customer,
       };
     } else if (resource === "policies") {
-      const policy = await createPolicy({ 
+      const policy = await createPolicy({
         ...params.data,
-        "policy": {
-          ...params.data.policy
+        policy: {
+          ...params.data.policy,
         },
         "@context": {
           "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
-          "odrl": "http://www.w3.org/ns/odrl/2/"
+          odrl: "http://www.w3.org/ns/odrl/2/",
         },
       });
       return {
         data: {
           ...policy,
-          id: policy["@id"]
+          id: policy["@id"],
         },
       };
     }

@@ -16,7 +16,7 @@ import QueryStatsIcon from "@mui/icons-material/QueryStats";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
-import PolicyIcon from '@mui/icons-material/Policy';
+import PolicyIcon from "@mui/icons-material/Policy";
 import GroupsIcon from "@mui/icons-material/Groups";
 import { useLocation } from "react-router-dom";
 import dataSource from "./data-source";
@@ -48,31 +48,44 @@ const CustomUserMenu = () => {
 
   return (
     <>
-      <Typography variant="button">{identity?.fullName}</Typography>
+      <Typography variant="button">{identity?.email}</Typography>
     </>
   );
 };
 
 const CustomAppBar = () => <AppBar userMenu={<CustomUserMenu />} />;
 
-const CustomMenu = () => (
-  <Menu>
-    <Menu.ResourceItem name="thingDescriptions" />
-    <Menu.ResourceItem name="devices" />
-    <Menu.ResourceItem name="customers" />
-    <Menu.ResourceItem name="users" />
-    <Menu.Item to="/sparql" primaryText="Query" leftIcon={<QueryStatsIcon />} />
-    <Divider/>
-    <Menu.ResourceItem name="assets" />
-    <Menu.ResourceItem name="policies" />
-    <Divider />
-    <Menu.Item
-      to="/thingsboard"
-      primaryText="Thingsboard"
-      leftIcon={<DashboardIcon />}
-    />
-  </Menu>
-);
+const CustomMenu = () => {
+  const { isLoading, identity } = useGetIdentity();
+  if (isLoading) {
+    return null;
+  }
+
+  const isAdmin = identity?.groups.includes("role:admin");
+
+  return (
+    <Menu>
+      <Menu.ResourceItem name="thingDescriptions" />
+      <Menu.ResourceItem name="devices" />
+      {isAdmin && <Menu.ResourceItem name="customers" />}
+      {isAdmin && <Menu.ResourceItem name="users" />}
+      <Menu.Item
+        to="/sparql"
+        primaryText="Query"
+        leftIcon={<QueryStatsIcon />}
+      />
+      <Divider />
+      <Menu.ResourceItem name="assets" />
+      <Menu.ResourceItem name="policies" />
+      <Divider />
+      <Menu.Item
+        to="/thingsboard"
+        primaryText="Thingsboard"
+        leftIcon={<DashboardIcon />}
+      />
+    </Menu>
+  );
+};
 
 const CustomLayout = (props: any) => {
   const location = useLocation();

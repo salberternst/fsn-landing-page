@@ -1,12 +1,12 @@
 package routes
 
 import (
-	"bytes"
-	"encoding/json"
-	"io"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/salberternst/fsn_landing_page/pkg/api"
+	"github.com/salberternst/fsn_landing_page/pkg/middleware"
 )
 
 type Asset struct {
@@ -16,34 +16,12 @@ type Asset struct {
 		Name        string `json:"name"`
 		ContentType string `json:"contenttype"`
 	} `json:"properties"`
-	DataAddress struct {
-		Type      string `json:"type"`
-		Name      string `json:"name"`
-		BaseURL   string `json:"baseUrl"`
-		ProxyPath bool   `json:"proxyPath"`
-	} `json:"dataAddress"`
+	DataAddress map[string]string `json:"dataAddress"`
 }
 
 type AssetQuery struct {
-	Page     uint `form:"page" json:"user" binding:"required"`
-	PageSize uint `form:"page_size" json:"password" binding:"required"`
-}
-
-type Criterion struct {
-	Type         string      `json:"@type"`
-	OperandLeft  interface{} `json:"operandLeft"`
-	OperandRight interface{} `json:"operandRight"`
-	Operator     string      `json:"operator"`
-}
-
-type QuerySpec struct {
-	Context          map[string]string `json:"@context"`
-	Type             string            `json:"@type"`
-	Offset           uint              `json:"offset"`
-	Limit            uint              `json:"limit"`
-	SortOrder        string            `json:"sortOrder,omitempty"`
-	SortField        string            `json:"sortField,omitempty"`
-	FilterExpression []Criterion       `json:"filterExpression"`
+	Page     uint `form:"page" binding:"required"`
+	PageSize uint `form:"page_size"  binding:"required"`
 }
 
 func getAssets(ctx *gin.Context) {
@@ -53,123 +31,108 @@ func getAssets(ctx *gin.Context) {
 		return
 	}
 
-	querySpec := QuerySpec{
+	claims := ctx.MustGet("access-token-claims").(*middleware.Claims)
+
+	querySpec := api.QuerySpec{
 		Context: map[string]string{
 			"@vocab": "https://w3id.org/edc/v0.0.1/ns/",
 		},
-		Type:             "QuerySpec",
-		Offset:           (assetQuery.Page - 1) * assetQuery.PageSize,
-		Limit:            assetQuery.PageSize,
-		FilterExpression: []Criterion{},
+		Type:      "QuerySpec",
+		Offset:    (assetQuery.Page - 1) * assetQuery.PageSize,
+		Limit:     assetQuery.PageSize,
+		SortOrder: "DESC",
+		SortField: "id",
+		FilterExpression: []api.Criterion{
+			{
+				OperandLeft:  "https://w3id.org/edc/v0.0.1/ns/createdBy",
+				Operator:     "=",
+				OperandRight: claims.Subject,
+			},
+		},
 	}
 
-	buffer, err := json.Marshal(querySpec)
+	edcApi := ctx.MustGet("edc-api").(*api.EdcAPI)
+
+	assets, err := edcApi.GetAssets(querySpec)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, querySpec)
 		return
 	}
 
-	resp, err := http.Post("http://edc-provider:19193/management/v3/assets/request", "application/json", bytes.NewBuffer(buffer))
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		ctx.JSON(resp.StatusCode, gin.H{"error": "Failed to fetch assets"})
-		return
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.Data(resp.StatusCode, resp.Header.Get("Content-Type"), body)
+	ctx.JSON(http.StatusOK, assets)
 }
 
 func getAsset(ctx *gin.Context) {
 	id := ctx.Param("id")
 
-	resp, err := http.Get("http://edc-provider:19193/management/v3/assets/" + id)
+	edcApi := ctx.MustGet("edc-api").(*api.EdcAPI)
+
+	asset, err := edcApi.GetAsset(id)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	defer resp.Body.Close()
+	claims := ctx.MustGet("access-token-claims").(*middleware.Claims)
 
-	if resp.StatusCode != http.StatusOK {
-		ctx.JSON(resp.StatusCode, gin.H{"error": "Failed to fetch asset"})
+	if asset.PrivateProperties == nil || asset.PrivateProperties["createdBy"] != claims.Subject {
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "You are not allowed to access this asset"})
 		return
 	}
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.Data(resp.StatusCode, resp.Header.Get("Content-Type"), body)
+	ctx.JSON(http.StatusOK, asset)
 }
 
 func deleteAsset(ctx *gin.Context) {
 	id := ctx.Param("id")
 
-	req, err := http.NewRequest(http.MethodDelete, "http://edc-provider:19193/management/v3/assets/"+id, nil)
+	edcApi := ctx.MustGet("edc-api").(*api.EdcAPI)
+	claims := ctx.MustGet("access-token-claims").(*middleware.Claims)
+
+	asset, err := edcApi.GetAsset(id)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	resp, err := http.DefaultClient.Do(req)
+	if asset.PrivateProperties == nil || asset.PrivateProperties["createdBy"] != claims.Subject {
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "You are not allowed to delete this asset"})
+		return
+	}
+
+	err = edcApi.DeleteAsset(id)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		ctx.JSON(resp.StatusCode, gin.H{"error": "Failed to delete asset"})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{"message": "Asset deleted"})
+	ctx.JSON(http.StatusOK, gin.H{
+		"id": id,
+	})
 }
 
 func createAsset(ctx *gin.Context) {
-	var asset map[string]interface{}
+	var asset api.Asset
 	if err := ctx.BindJSON(&asset); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	buffer, err := json.Marshal(asset)
+	claims := ctx.MustGet("access-token-claims").(*middleware.Claims)
+	asset.Id = uuid.New().String()
+	if asset.PrivateProperties == nil {
+		asset.PrivateProperties = map[string]string{}
+	}
+	asset.PrivateProperties["createdBy"] = claims.Subject
+
+	edcApi := ctx.MustGet("edc-api").(*api.EdcAPI)
+	createdAsset, err := edcApi.CreateAsset(asset)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	print(string(buffer))
-
-	resp, err := http.Post("http://edc-provider:19193/management/v3/assets", "application/json", bytes.NewBuffer(buffer))
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		ctx.JSON(resp.StatusCode, gin.H{"error": "Failed to create asset"})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{"message": "Asset created"})
+	ctx.JSON(http.StatusOK, createdAsset)
 }
 
 func addAssetsRoutes(r *gin.RouterGroup) {
