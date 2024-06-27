@@ -33,11 +33,11 @@ func getPolicies(ctx *gin.Context) {
 		Context: map[string]string{
 			"@vocab": "https://w3id.org/edc/v0.0.1/ns/",
 		},
-		Type:      "QuerySpec",
-		Offset:    (policyQuery.Page - 1) * policyQuery.PageSize,
-		Limit:     policyQuery.PageSize,
-		SortOrder: "DESC",
-		SortField: "id",
+		Type:   "QuerySpec",
+		Offset: (policyQuery.Page - 1) * policyQuery.PageSize,
+		Limit:  policyQuery.PageSize,
+		// SortOrder: "DESC",
+		// SortField: "id",
 		FilterExpression: []api.Criterion{
 			{
 				OperandLeft:  "policy.assigner",

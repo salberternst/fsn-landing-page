@@ -5,6 +5,12 @@ import {
   fetchAssets,
 } from "./api/assets";
 import {
+  createContractDefinition,
+  deleteContractDefinition,
+  fetchContractDefinition,
+  fetchContractDefinitions,
+} from "./api/contract_definitions";
+import {
   createCustomer,
   deleteCustomer,
   fetchCustomer,
@@ -83,6 +89,18 @@ export default {
           hasPreviousPage: params.pagination.page > 1,
         },
       };
+    } else if (resource === "contractdefinitions") {
+      const contracts = await fetchContractDefinitions(params.pagination);
+      return {
+        data: contracts.map((contract: any) => ({
+          ...contract,
+          id: contract["@id"],
+        })),
+        pageInfo: {
+          hasNextPage: contracts.length === params.pagination.perPage,
+          hasPreviousPage: params.pagination.page > 1,
+        },
+      };
     }
   },
   getOne: async (resource: any, params: any) => {
@@ -118,6 +136,14 @@ export default {
         data: {
           ...policy,
           id: policy["@id"],
+        },
+      };
+    } else if (resource === "contractdefinitions") {
+      const contractDefinition = await fetchContractDefinition(params.id);
+      return {
+        data: {
+          ...contractDefinition,
+          id: contractDefinition["@id"],
         },
       };
     }
@@ -186,6 +212,19 @@ export default {
           id: policy["@id"],
         },
       };
+    } else if (resource === "contractdefinitions") {
+      const contractDefinition = await createContractDefinition({
+        ...params.data,
+        "@context": {
+          "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+        },
+      });
+      return {
+        data: {
+          ...contractDefinition,
+          id: contractDefinition["@id"],
+        },
+      };
     }
   },
   delete: async (resource: any, params: any) => {
@@ -212,6 +251,13 @@ export default {
       };
     } else if (resource === "policies") {
       await deletePolicy(params.id);
+      return {
+        data: {
+          id: params.id,
+        },
+      };
+    } else if (resource === "contractdefinitions") {
+      await deleteContractDefinition(params.id);
       return {
         data: {
           id: params.id,

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/go-resty/resty/v2"
@@ -10,6 +11,10 @@ type EdcAPI struct {
 	client *resty.Client
 }
 
+// "@type": "Criterion",
+// "operandLeft": "https://w3id.org/edc/v0.0.1/ns/id",
+// "operator": "=",
+// "operandRight": "assetId"
 type Criterion struct {
 	Type         string `json:"@type"`
 	OperandLeft  string `json:"operandLeft"`
@@ -18,13 +23,13 @@ type Criterion struct {
 }
 
 type QuerySpec struct {
-	Context          map[string]string `json:"@context"`
-	Type             string            `json:"@type"`
-	Offset           uint              `json:"offset"`
-	Limit            uint              `json:"limit"`
-	SortOrder        string            `json:"sortOrder"`
-	SortField        string            `json:"sortField"`
-	FilterExpression []Criterion       `json:"filterExpression"`
+	Context map[string]string `json:"@context"`
+	Type    string            `json:"@type"`
+	Offset  uint              `json:"offset"`
+	Limit   uint              `json:"limit"`
+	// SortOrder        string            `json:"sortOrder"`
+	// SortField        string            `json:"sortField"`
+	FilterExpression []Criterion `json:"filterExpression"`
 }
 
 type Constraint struct {
@@ -81,7 +86,7 @@ type Policy struct {
 }
 
 type PolicyDefinition struct {
-	Context           map[string]string      `json:"@context"`
+	Context           *interface{}           `json:"@context"`
 	CreatedAt         uint                   `json:"createdAt"`
 	ID                string                 `json:"@id"`
 	Type              string                 `json:"@type"`
@@ -96,6 +101,34 @@ type Asset struct {
 	DataAddress       map[string]string `json:"dataAddress"`
 	PrivateProperties map[string]string `json:"privateProperties,omitempty"`
 	Properties        map[string]string `json:"properties"`
+}
+
+type ContractDefinition struct {
+	Context           *interface{}      `json:"@context"`
+	Id                string            `json:"@id,omitempty"`
+	Type              string            `json:"@type,omitempty"`
+	AccessPolicyId    string            `json:"accessPolicyId"`
+	AssetsSelector    AssetSelector     `json:"assetsSelector,omitempty"`
+	ContractPolicyId  string            `json:"contractPolicyId"`
+	PrivateProperties map[string]string `json:"privateProperties,omitempty"`
+}
+
+type AssetSelector []Criterion
+
+func (a *AssetSelector) UnmarshalJSON(data []byte) error {
+	var single Criterion
+	if err := json.Unmarshal(data, &single); err == nil {
+		*a = AssetSelector{single}
+		return nil
+	}
+
+	var multiple []Criterion
+	if err := json.Unmarshal(data, &multiple); err == nil {
+		*a = multiple
+		return nil
+	}
+
+	return fmt.Errorf("failed to unmarshal AssetSelector")
 }
 
 func NewEdcAPI() *EdcAPI {
@@ -244,4 +277,77 @@ func (e *EdcAPI) DeleteAsset(id string) error {
 	}
 
 	return nil
+}
+
+func (e *EdcAPI) GetContractDefinitions(querySpec QuerySpec) ([]ContractDefinition, error) {
+	var contractsDefinitions []ContractDefinition
+	resp, err := e.client.R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(querySpec).
+		SetResult(&contractsDefinitions).
+		Post("http://edc-provider:19193/management/v2/contractdefinitions/request")
+
+	fmt.Println(resp)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode() != 200 {
+		return nil, fmt.Errorf("unable to get contracts: %s", resp.String())
+	}
+
+	return contractsDefinitions, nil
+}
+
+func (e *EdcAPI) GetContractDefinition(id string) (*ContractDefinition, error) {
+	contractDefinition := ContractDefinition{}
+	resp, err := e.client.R().
+		SetHeader("Content-Type", "application/json").
+		SetResult(&contractDefinition).
+		Get("http://edc-provider:19193/management/v2/contractdefinitions/" + id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode() != 200 {
+		return nil, fmt.Errorf("unable to get contract: %s", resp.String())
+	}
+
+	return &contractDefinition, nil
+}
+
+func (e *EdcAPI) DeleteContractDefinition(id string) error {
+	resp, err := e.client.R().
+		SetHeader("Content-Type", "application/json").
+		Delete("http://edc-provider:19193/management/v2/contractdefinitions/" + id)
+
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode() != 204 {
+		return fmt.Errorf("unable to delete contract: %s", resp.String())
+	}
+
+	return nil
+}
+
+func (e *EdcAPI) CreateContractDefinition(contractDefinition ContractDefinition) (*ContractDefinition, error) {
+	resp, err := e.client.R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(contractDefinition).
+		SetResult(&contractDefinition).
+		Post("http://edc-provider:19193/management/v2/contractdefinitions")
+
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode() != 200 {
+		return nil, fmt.Errorf("unable to create contract: %s", resp.String())
+	}
+
+	return &contractDefinition, nil
 }

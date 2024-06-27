@@ -37,14 +37,14 @@ func getAssets(ctx *gin.Context) {
 		Context: map[string]string{
 			"@vocab": "https://w3id.org/edc/v0.0.1/ns/",
 		},
-		Type:      "QuerySpec",
-		Offset:    (assetQuery.Page - 1) * assetQuery.PageSize,
-		Limit:     assetQuery.PageSize,
-		SortOrder: "DESC",
-		SortField: "id",
+		Type:   "QuerySpec",
+		Offset: (assetQuery.Page - 1) * assetQuery.PageSize,
+		Limit:  assetQuery.PageSize,
+		// SortOrder: "DESC",
+		// SortField: "id",
 		FilterExpression: []api.Criterion{
 			{
-				OperandLeft:  "https://w3id.org/edc/v0.0.1/ns/createdBy",
+				OperandLeft:  "privateProperties.'https://w3id.org/edc/v0.0.1/ns/createdBy'",
 				Operator:     "=",
 				OperandRight: claims.Subject,
 			},

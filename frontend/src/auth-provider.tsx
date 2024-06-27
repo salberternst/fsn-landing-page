@@ -16,6 +16,10 @@ const authProvider = {
   checkError: () => fetchAuth(),
   getIdentity: () => fetchUserInfo(),
   getPermissions: () => Promise.resolve(""),
+  logout: () => {
+    window.location.href = "/oauth2/sign_out";
+    return Promise.resolve();
+  },
 };
 
 export default authProvider;

@@ -18,6 +18,7 @@ import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
 import PolicyIcon from "@mui/icons-material/Policy";
 import GroupsIcon from "@mui/icons-material/Groups";
+import GavelIcon from "@mui/icons-material/Gavel";
 import { useLocation } from "react-router-dom";
 import dataSource from "./data-source";
 import authProvider from "./auth-provider";
@@ -38,6 +39,11 @@ import {
 } from "./components/customers";
 import { UserShow, UsersList } from "./components/users";
 import { PoliciesList, PolicyCreate, PolicyShow } from "./components/policies";
+import {
+  ContractDefinitionCreate,
+  ContractDefinitionShow,
+  ContractDefinitionsList,
+} from "./components/contract_definitions";
 
 const CustomUserMenu = () => {
   const { isLoading, identity } = useGetIdentity();
@@ -77,6 +83,7 @@ const CustomMenu = () => {
       <Divider />
       <Menu.ResourceItem name="assets" />
       <Menu.ResourceItem name="policies" />
+      <Menu.ResourceItem name="contractdefinitions" />
       <Divider />
       <Menu.Item
         to="/thingsboard"
@@ -156,6 +163,14 @@ export const App = () => (
       list={PoliciesList}
       show={PolicyShow}
       create={PolicyCreate}
+    />
+    <Resource
+      name="contractdefinitions"
+      options={{ label: "Contract Definitions" }}
+      icon={GavelIcon}
+      list={ContractDefinitionsList}
+      show={ContractDefinitionShow}
+      create={ContractDefinitionCreate}
     />
   </Admin>
 );
