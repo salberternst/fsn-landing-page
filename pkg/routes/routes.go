@@ -15,9 +15,11 @@ func AddRoutes(r *gin.Engine) {
 	api.Use(middleware.KeycloakMiddleware())
 	api.Use(middleware.ThingsboardMiddleware())
 	api.Use(middleware.FusekiMiddleware())
+	api.Use(middleware.EdcMiddleware())
 
 	addUserRoutes(api)
-	addAssetsRoutes(api)
 	addCustomersRoutes(api)
 	addUsersRoute(api)
+	addAssetsRoutes(api)
+	addPoliciesRoutes(api)
 }

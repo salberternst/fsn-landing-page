@@ -16,6 +16,7 @@ import QueryStatsIcon from "@mui/icons-material/QueryStats";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
+import PolicyIcon from '@mui/icons-material/Policy';
 import GroupsIcon from "@mui/icons-material/Groups";
 import { useLocation } from "react-router-dom";
 import dataSource from "./data-source";
@@ -36,6 +37,7 @@ import {
   CustomerUpdate,
 } from "./components/customers";
 import { UserShow, UsersList } from "./components/users";
+import { PoliciesList, PolicyCreate, PolicyShow } from "./components/policies";
 
 const CustomUserMenu = () => {
   const { isLoading, identity } = useGetIdentity();
@@ -55,12 +57,14 @@ const CustomAppBar = () => <AppBar userMenu={<CustomUserMenu />} />;
 
 const CustomMenu = () => (
   <Menu>
-    <Menu.ResourceItem name="assets" />
     <Menu.ResourceItem name="thingDescriptions" />
     <Menu.ResourceItem name="devices" />
     <Menu.ResourceItem name="customers" />
     <Menu.ResourceItem name="users" />
     <Menu.Item to="/sparql" primaryText="Query" leftIcon={<QueryStatsIcon />} />
+    <Divider/>
+    <Menu.ResourceItem name="assets" />
+    <Menu.ResourceItem name="policies" />
     <Divider />
     <Menu.Item
       to="/thingsboard"
@@ -131,6 +135,14 @@ export const App = () => (
       icon={PeopleOutlineIcon}
       list={UsersList}
       show={UserShow}
+    />
+    <Resource
+      name="policies"
+      options={{ label: "Policies" }}
+      icon={PolicyIcon}
+      list={PoliciesList}
+      show={PolicyShow}
+      create={PolicyCreate}
     />
   </Admin>
 );

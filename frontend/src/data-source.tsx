@@ -11,6 +11,7 @@ import {
   fetchCustomers,
   updateCustomer,
 } from "./api/customers";
+import { createPolicy, deletePolicy, fetchPolicies, fetchPolicy } from "./api/policies";
 import {
   createThing,
   deleteThing,
@@ -25,7 +26,7 @@ export default {
     if (resource === "thingDescriptions") {
       const result = await fetchThings(params.pagination, params.sort);
       return {
-        data: result.things.map((thing) => ({
+        data: result.things.map((thing: any) => ({
           ...thing,
           description: {},
         })),
@@ -34,7 +35,7 @@ export default {
     } else if (resource === "assets") {
       const assets = await fetchAssets(params.pagination);
       return {
-        data: assets.map((asset) => ({
+        data: assets.map((asset: any) => ({
           ...asset,
           id: asset["@id"],
         })),
@@ -55,7 +56,7 @@ export default {
           hasNextPage: customers.length === params.pagination.perPage,
           hasPreviousPage: params.pagination.page > 1,
         },
-      };
+      }
     } else if (resource === "users") {
       const users = await fetchUsers(params.pagination);
       return {
@@ -65,10 +66,21 @@ export default {
           hasPreviousPage: params.pagination.page > 1,
         },
       };
+    } else if (resource === "policies") {
+      const policies = await fetchPolicies(params.pagination);
+      return {
+        data: policies.map((policy: any) => ({
+          ...policy,
+          id: policy["@id"],
+        })),
+        pageInfo: {
+          hasNextPage: policies.length === params.pagination.perPage,
+          hasPreviousPage: params.pagination.page > 1,
+        },
+      };
     }
   },
   getOne: async (resource: any, params: any) => {
-    console.log(resource, params);
     if (resource === "thingDescriptions") {
       const description = await fetchThing(params.id);
       return {
@@ -94,6 +106,14 @@ export default {
       const user = await fetchUser(params.id);
       return {
         data: user,
+      };
+    } else if (resource === "policies") {
+      const policy = await fetchPolicy(params.id);
+      return {
+        data: {
+          ...policy,
+          id: policy["@id"],
+        },
       };
     }
   },
@@ -144,6 +164,23 @@ export default {
       return {
         data: customer,
       };
+    } else if (resource === "policies") {
+      const policy = await createPolicy({ 
+        ...params.data,
+        "policy": {
+          ...params.data.policy
+        },
+        "@context": {
+          "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+          "odrl": "http://www.w3.org/ns/odrl/2/"
+        },
+      });
+      return {
+        data: {
+          ...policy,
+          id: policy["@id"]
+        },
+      };
     }
   },
   delete: async (resource: any, params: any) => {
@@ -163,6 +200,13 @@ export default {
       };
     } else if (resource === "customers") {
       await deleteCustomer(params.id);
+      return {
+        data: {
+          id: params.id,
+        },
+      };
+    } else if (resource === "policies") {
+      await deletePolicy(params.id);
       return {
         data: {
           id: params.id,
