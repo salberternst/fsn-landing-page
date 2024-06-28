@@ -23,4 +23,5 @@ func AddRoutes(r *gin.Engine) {
 	addAssetsRoutes(api)
 	addPoliciesRoutes(api)
 	addContractDefinitionsRoutes(api)
+	addContractNegotationsRoutes(api)
 }

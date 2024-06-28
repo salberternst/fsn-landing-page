@@ -19,6 +19,7 @@ import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
 import PolicyIcon from "@mui/icons-material/Policy";
 import GroupsIcon from "@mui/icons-material/Groups";
 import GavelIcon from "@mui/icons-material/Gavel";
+import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import { useLocation } from "react-router-dom";
 import dataSource from "./data-source";
 import authProvider from "./auth-provider";
@@ -44,6 +45,8 @@ import {
   ContractDefinitionShow,
   ContractDefinitionsList,
 } from "./components/contract_definitions";
+import { Catalog } from "./components/catalog";
+import { ContractNegotationCreate, ContractNegotationShow } from "./components/contract_negotiations";
 
 const CustomUserMenu = () => {
   const { isLoading, identity } = useGetIdentity();
@@ -84,6 +87,11 @@ const CustomMenu = () => {
       <Menu.ResourceItem name="assets" />
       <Menu.ResourceItem name="policies" />
       <Menu.ResourceItem name="contractdefinitions" />
+      <Menu.Item
+        to="/catalog"
+        primaryText="Catalog"
+        leftIcon={<AutoStoriesIcon />}
+      />
       <Divider />
       <Menu.Item
         to="/thingsboard"
@@ -122,6 +130,7 @@ export const App = () => (
     <CustomRoutes>
       <Route path="/sparql" element={<SparqlPage />} />
       <Route path="/thingsboard" element={<Thingsboard />} />
+      <Route path="/catalog" element={<Catalog />} />
     </CustomRoutes>
     <Resource
       name="thingDescriptions"
@@ -171,6 +180,12 @@ export const App = () => (
       list={ContractDefinitionsList}
       show={ContractDefinitionShow}
       create={ContractDefinitionCreate}
+    />
+    <Resource
+      name="contractnegotiations"
+      options={{ label: "Contract Negotiations" }}
+      create={ContractNegotationCreate}
+      show={ContractNegotationShow}
     />
   </Admin>
 );

@@ -86,12 +86,12 @@ type Policy struct {
 }
 
 type PolicyDefinition struct {
-	Context           *interface{}           `json:"@context"`
-	CreatedAt         uint                   `json:"createdAt"`
-	ID                string                 `json:"@id"`
-	Type              string                 `json:"@type"`
-	Policy            Policy                 `json:"policy"`
-	PrivateProperties map[string]interface{} `json:"privateProperties,omitempty"`
+	Context           *interface{}      `json:"@context"`
+	CreatedAt         uint              `json:"createdAt"`
+	ID                string            `json:"@id"`
+	Type              string            `json:"@type"`
+	Policy            Policy            `json:"policy"`
+	PrivateProperties map[string]string `json:"privateProperties,omitempty"`
 }
 
 type Asset struct {
@@ -129,6 +129,67 @@ func (a *AssetSelector) UnmarshalJSON(data []byte) error {
 	}
 
 	return fmt.Errorf("failed to unmarshal AssetSelector")
+}
+
+type CallbackAddress struct {
+	Type          string   `json:"@type,omitempty"`
+	AuthCodeId    string   `json:"authCodeId,omitempty"`
+	AuthKey       string   `json:"authKey,omitempty"`
+	Events        []string `json:"events,omitempty"`
+	Transactional bool     `json:"transactional,omitempty"`
+	Uri           string   `json:"uri,omitempty"`
+}
+
+type ContractNegotiation struct {
+	Context             *interface{}      `json:"@context"`
+	Id                  string            `json:"@id,omitempty"`
+	Type                string            `json:"@type,omitempty"`
+	CallbackAddresses   []CallbackAddress `json:"callbackAddresses,omitempty"`
+	ContractAgreementId string            `json:"contractAgreementId,omitempty"`
+	CounterPartyAddress string            `json:"counterPartyAddress,omitempty"`
+	CounterPartyId      string            `json:"counterPartyId,omitempty"`
+	ErrorDetail         string            `json:"errorDetail,omitempty"`
+	Protocol            string            `json:"protocol,omitempty"`
+	State               string            `json:"state,omitempty"`
+	PrivateProperties   map[string]string `json:"privateProperties,omitempty"`
+}
+
+type ContractOfferDescription struct {
+	Type_   string  `json:"@type,omitempty"`
+	AssetId string  `json:"assetId,omitempty"`
+	OfferId string  `json:"offerId,omitempty"`
+	Policy  *Policy `json:"policy,omitempty"`
+}
+
+type Offer struct {
+	Context  *interface{} `json:"@context"`
+	Id       string       `json:"@id"`
+	Type_    string       `json:"@type,omitempty"`
+	Assigner string       `json:"assigner"`
+	Target   string       `json:"target"`
+}
+
+type ContractRequest struct {
+	Context             *interface{}              `json:"@context"`
+	Type_               string                    `json:"@type,omitempty"`
+	CallbackAddresses   []CallbackAddress         `json:"callbackAddresses,omitempty"`
+	ConnectorAddress    string                    `json:"connectorAddress,omitempty"`
+	CounterPartyAddress string                    `json:"counterPartyAddress"`
+	Offer               *ContractOfferDescription `json:"offer,omitempty"`
+	Policy              *Offer                    `json:"policy"`
+	Protocol            string                    `json:"protocol"`
+	ProviderId          string                    `json:"providerId,omitempty"`
+	PrivateProperties   map[string]string         `json:"privateProperties,omitempty"`
+}
+
+type ContractAgreement struct {
+	Id                  string  `json:"@id,omitempty"`
+	Type_               string  `json:"@type,omitempty"`
+	AssetId             string  `json:"assetId,omitempty"`
+	ConsumerId          string  `json:"consumerId,omitempty"`
+	ContractSigningDate int64   `json:"contractSigningDate,omitempty"`
+	Policy              *Policy `json:"policy,omitempty"`
+	ProviderId          string  `json:"providerId,omitempty"`
 }
 
 func NewEdcAPI() *EdcAPI {
@@ -350,4 +411,42 @@ func (e *EdcAPI) CreateContractDefinition(contractDefinition ContractDefinition)
 	}
 
 	return &contractDefinition, nil
+}
+
+func (e *EdcAPI) CreateContractNegotiation(contractNegotiation ContractRequest) (*ContractAgreement, error) {
+	var contractAgreement ContractAgreement
+
+	resp, err := e.client.R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(contractNegotiation).
+		SetResult(&contractAgreement).
+		Post("http://edc-provider:19193/management/v2/contractnegotiations")
+
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode() != 200 {
+		return nil, fmt.Errorf("unable to create contract negotiation: %s", resp.String())
+	}
+
+	return &contractAgreement, nil
+}
+
+func (e *EdcAPI) GetContractNegotiation(id string) (*ContractNegotiation, error) {
+	contractNegotiation := ContractNegotiation{}
+	resp, err := e.client.R().
+		SetHeader("Content-Type", "application/json").
+		SetResult(&contractNegotiation).
+		Get("http://edc-provider:19193/management/v2/contractnegotiations/" + id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode() != 200 {
+		return nil, fmt.Errorf("unable to get contract negotiation: %s", resp.String())
+	}
+
+	return &contractNegotiation, nil
 }

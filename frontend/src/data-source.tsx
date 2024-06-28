@@ -4,12 +4,14 @@ import {
   fetchAsset,
   fetchAssets,
 } from "./api/assets";
+import { fetchCatalog } from "./api/catalog";
 import {
   createContractDefinition,
   deleteContractDefinition,
   fetchContractDefinition,
   fetchContractDefinitions,
 } from "./api/contract_definitions";
+import { createContractNegotiation, fetchContractNegotiation } from "./api/contract_negotiations";
 import {
   createCustomer,
   deleteCustomer,
@@ -146,6 +148,23 @@ export default {
           id: contractDefinition["@id"],
         },
       };
+    } else if (resource === "catalog") {
+      const catalog = await fetchCatalog(params.id);
+      return {
+        data: {
+          id: params.id,
+          ...catalog,
+        },
+        id: params.id,
+      };
+    } else if (resource === "contractnegotiations") {
+      const contractNegotiation = await fetchContractNegotiation(params.id);
+      return {
+        data: {
+          ...contractNegotiation,
+          id: contractNegotiation["@id"],
+        },
+      };
     }
   },
   update: async (resource: any, params: any) => {
@@ -216,13 +235,31 @@ export default {
       const contractDefinition = await createContractDefinition({
         ...params.data,
         "@context": {
-          "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+          "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
         },
       });
       return {
         data: {
           ...contractDefinition,
           id: contractDefinition["@id"],
+        },
+      };
+    }  else if (resource === "contractnegotiations") {
+      const contractNegotation = await createContractNegotiation({
+        ...params.data,
+        "@type": "ContractRequest",
+        "policy": {
+          ...params.data.policy,
+          "@context": "http://www.w3.org/ns/odrl.jsonld",
+        },
+        "@context": {
+          "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+        },
+      });
+      return {
+        data: {
+          ...contractNegotation,
+          id: contractNegotation["@id"],
         },
       };
     }

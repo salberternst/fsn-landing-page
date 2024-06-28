@@ -40,7 +40,7 @@ func getPolicies(ctx *gin.Context) {
 		// SortField: "id",
 		FilterExpression: []api.Criterion{
 			{
-				OperandLeft:  "policy.assigner",
+				OperandLeft:  "privateProperties.'https://w3id.org/edc/v0.0.1/ns/createdBy'",
 				Operator:     "=",
 				OperandRight: claims.Subject,
 			},
@@ -90,7 +90,10 @@ func createPolicy(ctx *gin.Context) {
 	claims := ctx.MustGet("access-token-claims").(*middleware.Claims)
 
 	policyDefinition.ID = uuid.New().String()
-	policyDefinition.Policy.Assigner = claims.Subject
+	if policyDefinition.PrivateProperties == nil {
+		policyDefinition.PrivateProperties = map[string]string{}
+	}
+	policyDefinition.PrivateProperties["createdBy"] = claims.Subject
 
 	edcApi := ctx.MustGet("edc-api").(*api.EdcAPI)
 	createdPolicy, err := edcApi.CreatePolicy(policyDefinition)
