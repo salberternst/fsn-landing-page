@@ -20,6 +20,7 @@ import PolicyIcon from "@mui/icons-material/Policy";
 import GroupsIcon from "@mui/icons-material/Groups";
 import GavelIcon from "@mui/icons-material/Gavel";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
+import AutoModeIcon from '@mui/icons-material/AutoMode';
 import { useLocation } from "react-router-dom";
 import dataSource from "./data-source";
 import authProvider from "./auth-provider";
@@ -54,6 +55,7 @@ import {
   ContractAgreementShow,
   ContractAgreementsList,
 } from "./components/contract_agreements";
+import { TransferProcessesCreate, TransferProcessesList, TransferProcessesShow } from "./components/transfer_processes";
 
 const CustomUserMenu = () => {
   const { isLoading, identity } = useGetIdentity();
@@ -100,6 +102,7 @@ const CustomMenu = () => {
         leftIcon={<AutoStoriesIcon />}
       />
       <Menu.ResourceItem name="contractagreements" />
+      <Menu.ResourceItem name="transferprocesses" />
       <Divider />
       <Menu.Item
         to="/thingsboard"
@@ -200,6 +203,14 @@ export const App = () => (
       options={{ label: "Contract Agreements" }}
       list={ContractAgreementsList}
       show={ContractAgreementShow}
+    />
+    <Resource 
+      name="transferprocesses"
+      icon={AutoModeIcon}
+      options={{ label: "Transfer Processes" }}
+      list={TransferProcessesList}
+      show={TransferProcessesShow}
+      create={TransferProcessesCreate}
     />
   </Admin>
 );

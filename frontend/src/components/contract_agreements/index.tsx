@@ -6,12 +6,34 @@ import {
   Show,
   SimpleShowLayout,
   DateField,
+  useShowController,
+  Button
 } from "react-admin";
+import MuiButton from "@mui/material/Button";
+import { Link } from "react-router-dom";
 
 export const ContractAgreementShow = () => {
+  const { record } = useShowController();
   return (
     <Show>
       <SimpleShowLayout>
+        <MuiButton
+          component={Link}
+          to={{
+            pathname: "/transferprocesses/create",
+          }}
+          state={{
+            record: {
+              counterPartyAddress: record?.negotiation.counterPartyAddress,
+              contractId: record?.id,
+              assetId: record?.dataset.id,
+            },
+          }}
+          variant="outlined"
+          fullWidth
+        >
+          Transfer
+        </MuiButton>
         <TextField label="Id" source="id" />
         <TextField label="Type" source="contractAgreement.@type" />
         <TextField label="Asset Id" source="contractAgreement.assetId" />
@@ -68,12 +90,12 @@ export const ContractAgreementsList = () => (
   <List empty={false} hasCreate={true} exporter={false}>
     <Datagrid bulkActionButtons={false} rowClick="show">
       <TextField source="id" />
-      <TextField source="assetId" />
-      <TextField source="consumerId" />
-      <TextField source="providerId" />
+      <TextField source="contractAgreement.assetId" />
+      <TextField source="contractAgreement.consumerId" />
+      <TextField source="contractAgreement.providerId" />
       <DateField
         label="Contract Signing Date"
-        source="contractSigningDate"
+        source="contractAgreement.contractSigningDate"
         transform={(v: number) => new Date(v * 1000)}
         showTime
       />

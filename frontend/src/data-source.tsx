@@ -40,6 +40,7 @@ import {
   fetchThings,
   updateThing,
 } from "./api/thing_registry";
+import { createTransferProcess, fetchTransferProcess, fetchTransferProcesses } from "./api/transfer_processes";
 import { fetchUsers, fetchUser } from "./api/users";
 
 export default {
@@ -115,11 +116,28 @@ export default {
       const contracts = await fetchContractAgreements(params.pagination);
       return {
         data: contracts.map((contract: any) => ({
-          ...contract,
-          id: contract["@id"],
+          contractAgreement: {
+            ...contract,
+            id: contract["@id"]
+          },
+          negotiation: {},
+          dataset: {},
+          id: contract["@id"]
         })),
         pageInfo: {
           hasNextPage: contracts.length === params.pagination.perPage,
+          hasPreviousPage: params.pagination.page > 1,
+        },
+      };
+    } else if (resource === "transferprocesses") {
+      const transferProccesses = await fetchTransferProcesses(params.pagination);
+      return {
+        data: transferProccesses.map((transferProcess: any) => ({
+          ...transferProcess,
+          id: transferProcess["@id"],
+        })),
+        pageInfo: {
+          hasNextPage: transferProccesses.length === params.pagination.perPage,
           hasPreviousPage: params.pagination.page > 1,
         },
       };
@@ -200,6 +218,14 @@ export default {
           negotiation,
           dataset,
           id: contractAgreement["@id"],
+        },
+      };
+    } else if (resource === "transferprocesses") {
+      const transferProcess = await fetchTransferProcess(params.id);
+      return {
+        data: {
+          ...transferProcess,
+          id: transferProcess["@id"],
         },
       };
     }
@@ -299,6 +325,20 @@ export default {
           id: contractNegotation["@id"],
         },
       };
+    } else if (resource === "transferprocesses") {
+      const transferProcess = await createTransferProcess({
+        ...params.data,
+        "@context": {
+          "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+        },
+        "@type": "TransferRequestDto",
+      })
+      return {
+        data: {
+          ...transferProcess,
+          id: transferProcess["@id"],
+        },
+      };
     }
   },
   delete: async (resource: any, params: any) => {
@@ -338,5 +378,5 @@ export default {
         },
       };
     }
-  },
+  }
 };

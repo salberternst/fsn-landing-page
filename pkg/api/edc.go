@@ -207,6 +207,42 @@ type DatasetRequest struct {
 	QuerySpec           *QuerySpec   `json:"querySpec,omitempty"`
 }
 
+type DataAddress struct {
+	Type    string `json:"@type,omitempty"`
+	Type_   string `json:"type,omitempty"`
+	BaseUrl string `json:"baseUrl,omitempty"`
+}
+
+type TransferRequest struct {
+	Context             *interface{}      `json:"@context"`
+	Type_               string            `json:"@type,omitempty"`
+	AssetId             string            `json:"assetId"`
+	CallbackAddresses   []CallbackAddress `json:"callbackAddresses,omitempty"`
+	ConnectorAddress    string            `json:"connectorAddress,omitempty"`
+	ConnectorId         string            `json:"connectorId,omitempty"`
+	ContractId          string            `json:"contractId"`
+	CounterPartyAddress string            `json:"counterPartyAddress"`
+	DataDestination     *DataAddress      `json:"dataDestination,omitempty"`
+	PrivateProperties   map[string]string `json:"privateProperties,omitempty"`
+	Protocol            string            `json:"protocol"`
+	TransferType        string            `json:"transferType"`
+}
+
+type TransferProcess struct {
+	Id                  string            `json:"@id,omitempty"`
+	Type_               string            `json:"@type,omitempty"`
+	CallbackAddresses   []CallbackAddress `json:"callbackAddresses,omitempty"`
+	ContractAgreementId string            `json:"contractAgreementId,omitempty"`
+	CounterPartyAddress string            `json:"counterPartyAddress,omitempty"`
+	CounterPartyId      string            `json:"counterPartyId,omitempty"`
+	DataDestination     *DataAddress      `json:"dataDestination,omitempty"`
+	ErrorDetail         string            `json:"errorDetail,omitempty"`
+	PrivateProperties   map[string]string `json:"privateProperties,omitempty"`
+	Protocol            string            `json:"protocol,omitempty"`
+	State               string            `json:"state,omitempty"`
+	Type                string            `json:"type,omitempty"`
+}
+
 func NewEdcAPI() *EdcAPI {
 	return &EdcAPI{
 		client: resty.New(),
@@ -555,4 +591,68 @@ func (e *EdcAPI) GetCatalogDataset(datasetRequest DatasetRequest) (map[string]in
 	}
 
 	return dataset, nil
+}
+
+func (e *EdcAPI) GetTransferProcesses(querySpec QuerySpec) ([]TransferProcess, error) {
+	var transferProcesses []TransferProcess
+	resp, err := e.client.R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(querySpec).
+		SetResult(&transferProcesses).
+		Post("http://edc-provider:19193/management/v2/transferprocesses/request")
+
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode() != 200 {
+		return nil, fmt.Errorf("unable to get transfer processes: %s", resp.String())
+	}
+
+	return transferProcesses, nil
+}
+
+func (e *EdcAPI) GetTransferProcess(id string) (*TransferProcess, error) {
+	transferProcess := TransferProcess{}
+	resp, err := e.client.R().
+		SetHeader("Content-Type", "application/json").
+		SetResult(&transferProcess).
+		Get("http://edc-provider:19193/management/v2/transferprocesses/" + id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode() != 200 {
+		return nil, fmt.Errorf("unable to get transfer process: %s", resp.String())
+	}
+
+	return &transferProcess, nil
+}
+
+func (e *EdcAPI) CreateTransferProcess(transferRequest TransferRequest) (*TransferProcess, error) {
+	var transferProcess TransferProcess
+
+	transferRequestJSON, err := json.Marshal(transferRequest)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(string(transferRequestJSON))
+
+	resp, err := e.client.R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(transferRequest).
+		SetResult(&transferProcess).
+		Post("http://edc-provider:19193/management/v2/transferprocesses")
+
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode() != 200 {
+		return nil, fmt.Errorf("unable to create transfer process: %s", resp.String())
+	}
+
+	return &transferProcess, nil
 }

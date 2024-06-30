@@ -14,7 +14,7 @@ import MuiButton from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
 import { Link } from "react-router-dom";
 
-const CreateContractNegotiation = ({
+const CreateContractNegotiationButton = ({
   assetId,
   counterPartyAddress,
   participantId,
@@ -105,8 +105,8 @@ const PoliciesShow = ({ counterPartyAddress, participantId }) => {
   const record = useRecordContext();
   return (
     <ArrayField source="odrl:hasPolicy" label="Policies">
-      <SingleFieldList sx={{ flexDirection: "column" }}>
-        <CreateContractNegotiation
+      <SingleFieldList sx={{ flexDirection: "column" }} linkType="show">
+        <CreateContractNegotiationButton
           assetId={record["@id"]}
           participantId={participantId}
           counterPartyAddress={counterPartyAddress}
@@ -172,7 +172,7 @@ const CatalogConnect = () => {
     <MuiTextField
       label="EDC Address"
       value={inputValue}
-      disabled={counterPartyAddress}
+      disabled={counterPartyAddress !== null}
       onChange={(e) => setInputValue(e.target.value)}
       InputProps={{
         endAdornment: <CatalogConnectButton />,
