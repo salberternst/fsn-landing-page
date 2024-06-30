@@ -55,7 +55,7 @@ func GetCatalogDataset(ctx *gin.Context) {
 }
 
 func addCatalogsRoutes(r *gin.RouterGroup) {
-	contractAgreements := r.Group("/api/catalog")
+	contractAgreements := r.Group("/api/portal/catalog")
 	contractAgreements.POST("/", GetCatalog)
 	contractAgreements.POST("/dataset", GetCatalogDataset)
 }

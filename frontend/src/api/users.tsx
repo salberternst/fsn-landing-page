@@ -2,11 +2,14 @@ import { HttpError } from "react-admin";
 
 export const fetchUsers = async (pagination: any) => {
   const { page, perPage }: { page: number; perPage: number } = pagination;
-  const response = await fetch(`/api/users?page=${page}&page_size=${perPage}`, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  const response = await fetch(
+    `/api/portal/users?page=${page}&page_size=${perPage}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
 
   const json = await response.json();
   if (response.ok === false) {
@@ -17,7 +20,7 @@ export const fetchUsers = async (pagination: any) => {
 };
 
 export const fetchUser = async (id: string) => {
-  const response = await fetch(`/api/users/${id}`, {
+  const response = await fetch(`/api/portal/users/${id}`, {
     headers: {
       "Content-Type": "application/json",
     },

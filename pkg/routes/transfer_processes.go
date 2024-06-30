@@ -104,7 +104,7 @@ func CreateTransferProcess(ctx *gin.Context) {
 }
 
 func addTransferProcessesRoutes(r *gin.RouterGroup) {
-	transferProcesses := r.Group("/api/transferprocesses")
+	transferProcesses := r.Group("/api/portal/transferprocesses")
 	transferProcesses.GET("/", GetTransferProcesses)
 	transferProcesses.GET("/:id", GetTransferProcess)
 	transferProcesses.POST("/", CreateTransferProcess)

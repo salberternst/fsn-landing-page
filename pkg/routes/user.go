@@ -21,6 +21,6 @@ func getInfo(ctx *gin.Context) {
 }
 
 func addUserRoutes(r *gin.RouterGroup) {
-	userGroup := r.Group("/user")
+	userGroup := r.Group("/api/portal/user")
 	userGroup.GET("/info", getInfo)
 }

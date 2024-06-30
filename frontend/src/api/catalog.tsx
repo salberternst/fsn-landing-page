@@ -1,7 +1,7 @@
 import { HttpError } from "react-admin";
 
 export const fetchCatalog = async (edcAddress: string) => {
-  const response = await fetch(`/api/catalog`, {
+  const response = await fetch(`/api/portal/catalog`, {
     headers: {
       "Content-Type": "application/json",
     },
@@ -52,7 +52,7 @@ export const fetchCatalogDataset = async (
   edcAddress: string,
   assetId: string
 ) => {
-  const response = await fetch(`/api/catalog/dataset`, {
+  const response = await fetch(`/api/portal/catalog/dataset`, {
     headers: {
       "Content-Type": "application/json",
     },

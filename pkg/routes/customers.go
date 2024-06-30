@@ -381,7 +381,7 @@ func updateCustomer(ctx *gin.Context) {
 }
 
 func addCustomersRoutes(r *gin.RouterGroup) {
-	customersGroup := r.Group("/api/customers")
+	customersGroup := r.Group("/api/portal/customers")
 	customersGroup.GET("/", getCustomers)
 	customersGroup.GET("/:id", getCustomer)
 	customersGroup.POST("/", createCustomer)

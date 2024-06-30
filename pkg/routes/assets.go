@@ -136,7 +136,7 @@ func createAsset(ctx *gin.Context) {
 }
 
 func addAssetsRoutes(r *gin.RouterGroup) {
-	userGroup := r.Group("/api/assets")
+	userGroup := r.Group("/api/portal/assets")
 	userGroup.GET("/", getAssets)
 	userGroup.GET("/:id", getAsset)
 	userGroup.DELETE("/:id", deleteAsset)

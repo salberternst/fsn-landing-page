@@ -7,7 +7,7 @@ import { HttpError } from "react-admin";
  * @throws {HttpError} - If the response status is not ok, an HttpError is thrown with the error message and status code.
  */
 export const createContractNegotiation = async (data: any): Promise<any> => {
-  const response = await fetch(`/api/contractnegotiations`, {
+  const response = await fetch(`/api/portal/contractnegotiations`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -31,7 +31,7 @@ export const createContractNegotiation = async (data: any): Promise<any> => {
  * @throws {HttpError} If the response status is not ok, an HttpError is thrown with the error message and status code.
  */
 export const fetchContractNegotiation = async (id: string): Promise<any> => {
-  const response = await fetch(`/api/contractnegotiations/${id}`);
+  const response = await fetch(`/api/portal/contractnegotiations/${id}`);
   const json = await response.json();
   if (response.ok === false) {
     throw new HttpError(json.message, response.status);

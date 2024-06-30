@@ -9,5 +9,5 @@ func getHealth(ctx *gin.Context) {
 }
 
 func addHealthRoutes(r *gin.RouterGroup) {
-	r.GET("/health", getHealth)
+	r.GET("/api/portal/health", getHealth)
 }

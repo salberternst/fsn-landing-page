@@ -157,7 +157,7 @@ func CreateContractDefinition(ctx *gin.Context) {
 }
 
 func addContractDefinitionsRoutes(r *gin.RouterGroup) {
-	contracts := r.Group("/api/contractdefinitions")
+	contracts := r.Group("/api/portal/contractdefinitions")
 	contracts.GET("/", GetContractDefinitions)
 	contracts.GET("/:id", GetContractDefinition)
 	contracts.DELETE("/:id", DeleteContractDefinition)

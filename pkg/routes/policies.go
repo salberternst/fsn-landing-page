@@ -134,7 +134,7 @@ func deletePolicy(ctx *gin.Context) {
 }
 
 func addPoliciesRoutes(r *gin.RouterGroup) {
-	policiesGroup := r.Group("/api/policies")
+	policiesGroup := r.Group("/api/portal/policies")
 	policiesGroup.GET("/", getPolicies)
 	policiesGroup.GET("/:id", getPolicy)
 	policiesGroup.POST("/", createPolicy)

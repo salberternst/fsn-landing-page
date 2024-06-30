@@ -9,7 +9,7 @@ import { HttpError } from "react-admin";
 export const fetchAssets = async (pagination: any) => {
   const { page, perPage }: { page: number; perPage: number } = pagination;
   const response = await fetch(
-    `/api/assets?page=${page}&page_size=${perPage}`,
+    `/api/portal/assets?page=${page}&page_size=${perPage}`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -32,7 +32,7 @@ export const fetchAssets = async (pagination: any) => {
  * @throws {HttpError} If the server returns an error response.
  */
 export const fetchAsset = async (id: string) => {
-  const response = await fetch(`/api/assets/${id}`, {
+  const response = await fetch(`/api/portal/assets/${id}`, {
     headers: {
       "Content-Type": "application/json",
     },
@@ -54,7 +54,7 @@ export const fetchAsset = async (id: string) => {
  * @throws {HttpError} If the server returns an error response.
  */
 export const deleteAsset = async (id: string) => {
-  const response = await fetch(`/api/assets/${id}`, {
+  const response = await fetch(`/api/portal/assets/${id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -75,7 +75,7 @@ export const deleteAsset = async (id: string) => {
  * @throws {HttpError} - If the response status is not ok, an HttpError is thrown with the error message and status code.
  */
 export const createAsset = async (data: any): Promise<any> => {
-  const response = await fetch(`/api/assets`, {
+  const response = await fetch(`/api/portal/assets`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -40,7 +40,11 @@ import {
   fetchThings,
   updateThing,
 } from "./api/thing_registry";
-import { createTransferProcess, fetchTransferProcess, fetchTransferProcesses } from "./api/transfer_processes";
+import {
+  createTransferProcess,
+  fetchTransferProcess,
+  fetchTransferProcesses,
+} from "./api/transfer_processes";
 import { fetchUsers, fetchUser } from "./api/users";
 
 export default {
@@ -118,11 +122,11 @@ export default {
         data: contracts.map((contract: any) => ({
           contractAgreement: {
             ...contract,
-            id: contract["@id"]
+            id: contract["@id"],
           },
           negotiation: {},
           dataset: {},
-          id: contract["@id"]
+          id: contract["@id"],
         })),
         pageInfo: {
           hasNextPage: contracts.length === params.pagination.perPage,
@@ -130,7 +134,9 @@ export default {
         },
       };
     } else if (resource === "transferprocesses") {
-      const transferProccesses = await fetchTransferProcesses(params.pagination);
+      const transferProccesses = await fetchTransferProcesses(
+        params.pagination
+      );
       return {
         data: transferProccesses.map((transferProcess: any) => ({
           ...transferProcess,
@@ -329,10 +335,10 @@ export default {
       const transferProcess = await createTransferProcess({
         ...params.data,
         "@context": {
-          "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+          "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
         },
         "@type": "TransferRequestDto",
-      })
+      });
       return {
         data: {
           ...transferProcess,
@@ -378,5 +384,5 @@ export default {
         },
       };
     }
-  }
+  },
 };

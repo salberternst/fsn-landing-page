@@ -154,7 +154,7 @@ func createUser(ctx *gin.Context) {
 }
 
 func addUsersRoute(r *gin.RouterGroup) {
-	usersGroup := r.Group("/api/users")
+	usersGroup := r.Group("/api/portal/users")
 	usersGroup.GET("/", getUsers)
 	usersGroup.POST("/", createUser)
 	usersGroup.GET("/:id", getUser)

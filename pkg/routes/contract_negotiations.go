@@ -59,7 +59,7 @@ func GetContractNegotiation(ctx *gin.Context) {
 }
 
 func addContractNegotationsRoutes(r *gin.RouterGroup) {
-	contractNegotiations := r.Group("/api/contractnegotiations")
+	contractNegotiations := r.Group("/api/portal/contractnegotiations")
 	contractNegotiations.POST("/", CreateContractNegotiation)
 	contractNegotiations.GET("/:id", GetContractNegotiation)
 }

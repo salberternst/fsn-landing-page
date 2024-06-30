@@ -3,7 +3,7 @@ import { HttpError } from "react-admin";
 export const fetchContractAgreements = async (pagination: any) => {
   const { page, perPage }: { page: number; perPage: number } = pagination;
   const response = await fetch(
-    `/api/contractagreements?page=${page}&page_size=${perPage}`,
+    `/api/portal/contractagreements?page=${page}&page_size=${perPage}`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -20,7 +20,7 @@ export const fetchContractAgreements = async (pagination: any) => {
 };
 
 export const fetchContractAgreement = async (id: string) => {
-  const response = await fetch(`/api/contractagreements/${id}`);
+  const response = await fetch(`/api/portal/contractagreements/${id}`);
   const json = await response.json();
   if (response.ok === false) {
     throw new HttpError(json.message, response.status);
@@ -30,7 +30,9 @@ export const fetchContractAgreement = async (id: string) => {
 };
 
 export const fetchContractAgreementNegotiation = async (id: string) => {
-  const response = await fetch(`/api/contractagreements/${id}/negotiation`);
+  const response = await fetch(
+    `/api/portal/contractagreements/${id}/negotiation`
+  );
   const json = await response.json();
   if (response.ok === false) {
     throw new HttpError(json.message, response.status);

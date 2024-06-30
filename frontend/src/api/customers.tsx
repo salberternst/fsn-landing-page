@@ -10,7 +10,7 @@ import { HttpError } from "react-admin";
 export const fetchCustomers = async (pagination: any) => {
   const { page, perPage }: { page: number; perPage: number } = pagination;
   const response = await fetch(
-    `/api/customers?page=${page}&page_size=${perPage}`,
+    `/api/portal/customers?page=${page}&page_size=${perPage}`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -34,7 +34,7 @@ export const fetchCustomers = async (pagination: any) => {
  * @throws {HttpError} If the API request fails.
  */
 export const fetchCustomer = async (id: string) => {
-  const response = await fetch(`/api/customers/${id}`, {
+  const response = await fetch(`/api/portal/customers/${id}`, {
     headers: {
       "Content-Type": "application/json",
     },
@@ -55,7 +55,7 @@ export const fetchCustomer = async (id: string) => {
  * @throws {HttpError} - If the server returns an error response.
  */
 export const deleteCustomer = async (id: string): Promise<any> => {
-  const response = await fetch(`/api/customers/${id}`, {
+  const response = await fetch(`/api/portal/customers/${id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -77,7 +77,7 @@ export const deleteCustomer = async (id: string): Promise<any> => {
  * @throws {HttpError} If the server returns an error response.
  */
 export const createCustomer = async (data: any) => {
-  const response = await fetch(`/api/customers`, {
+  const response = await fetch(`/api/portal/customers`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

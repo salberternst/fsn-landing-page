@@ -10,7 +10,7 @@ import { HttpError } from "react-admin";
 export const fetchContractDefinitions = async (pagination: any) => {
   const { page, perPage }: { page: number; perPage: number } = pagination;
   const response = await fetch(
-    `/api/contractdefinitions?page=${page}&page_size=${perPage}`,
+    `/api/portal/contractdefinitions?page=${page}&page_size=${perPage}`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -34,7 +34,7 @@ export const fetchContractDefinitions = async (pagination: any) => {
  * @throws {HttpError} If the server returns an error response.
  */
 export const fetchContractDefinition = async (id: string) => {
-  const response = await fetch(`/api/contractdefinitions/${id}`, {
+  const response = await fetch(`/api/portal/contractdefinitions/${id}`, {
     headers: {
       "Content-Type": "application/json",
     },
@@ -55,7 +55,7 @@ export const fetchContractDefinition = async (id: string) => {
  * @throws {HttpError} - If the server returns an error response.
  */
 export const deleteContractDefinition = async (id: string) => {
-  const response = await fetch(`/api/contractdefinitions/${id}`, {
+  const response = await fetch(`/api/portal/contractdefinitions/${id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -77,7 +77,7 @@ export const deleteContractDefinition = async (id: string) => {
  * @throws {HttpError} - If the response status is not ok, an HttpError is thrown with the error message and status code.
  */
 export const createContractDefinition = async (data: any): Promise<any> => {
-  const response = await fetch(`/api/contractdefinitions`, {
+  const response = await fetch(`/api/portal/contractdefinitions`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

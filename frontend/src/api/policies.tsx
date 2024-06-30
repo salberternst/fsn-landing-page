@@ -10,7 +10,7 @@ import { HttpError } from "react-admin";
 export const fetchPolicies = async (pagination: any) => {
   const { page, perPage }: { page: number; perPage: number } = pagination;
   const response = await fetch(
-    `/api/policies?page=${page}&page_size=${perPage}`,
+    `/api/portal/policies?page=${page}&page_size=${perPage}`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -34,7 +34,7 @@ export const fetchPolicies = async (pagination: any) => {
  * @throws {HttpError} - If the API request fails, an HttpError is thrown with the error message and status code.
  */
 export const fetchPolicy = async (id: string): Promise<any> => {
-  const response = await fetch(`/api/policies/${id}`, {
+  const response = await fetch(`/api/portal/policies/${id}`, {
     headers: {
       "Content-Type": "application/json",
     },
@@ -49,7 +49,7 @@ export const fetchPolicy = async (id: string): Promise<any> => {
 };
 
 export const deletePolicy = async (id: string) => {
-  const response = await fetch(`/api/policies/${id}`, {
+  const response = await fetch(`/api/portal/policies/${id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -72,7 +72,7 @@ export const deletePolicy = async (id: string) => {
  * @throws {HttpError} If the request fails or returns an error.
  */
 export const createPolicy = async (data: any) => {
-  const response = await fetch(`/api/policies`, {
+  const response = await fetch(`/api/portal/policies`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
