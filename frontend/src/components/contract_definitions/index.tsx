@@ -15,16 +15,14 @@ import {
   AutocompleteInput,
   required,
   ArrayField,
-  useCreatePath,
-  ReferenceField
+  ReferenceField,
 } from "react-admin";
-import { Link } from 'react-router-dom';
 
 const ContractDefinitionShowBar = () => (
   <TopToolbar>
     <DeleteButton mutationMode="pessimistic" />
   </TopToolbar>
-)
+);
 
 export const ContractDefinitionsList = () => (
   <List empty={false} hasCreate={true} exporter={false}>
@@ -36,24 +34,27 @@ export const ContractDefinitionsList = () => (
   </List>
 );
 
-
 export const ContractDefinitionShow = () => (
   <Show actions={<ContractDefinitionShowBar />}>
     <SimpleShowLayout>
       <TextField source="id" />
       <TextField label="Type" source="@type" />
       <ReferenceField source="accessPolicyId" reference="policies" link="show">
-          <TextField source="id"/>
+        <TextField source="id" />
       </ReferenceField>
-      <ReferenceField source="contractPolicyId" reference="policies" link="show">
-          <TextField source="id"/>
+      <ReferenceField
+        source="contractPolicyId"
+        reference="policies"
+        link="show"
+      >
+        <TextField source="id" />
       </ReferenceField>
-      <ArrayField label="Asset Selector" source="assetsSelector" >
+      <ArrayField label="Asset Selector" source="assetsSelector">
         <Datagrid bulkActionButtons={false}>
           <TextField source="operandLeft" />
           <TextField source="operator" />
           <ReferenceField source="operandRight" reference="assets" link="show">
-              <TextField source="id"/>
+            <TextField source="id" />
           </ReferenceField>
         </Datagrid>
       </ArrayField>
@@ -64,8 +65,17 @@ export const ContractDefinitionShow = () => (
 export const ContractDefinitionCreate = (props: any) => (
   <Create {...props}>
     <SimpleForm>
-      <TextInput source="privateProperties.name" fullWidth validate={[required()]} />
-      <TextInput source="privateProperties.description" fullWidth multiline rows={4}/>
+      <TextInput
+        source="privateProperties.name"
+        fullWidth
+        validate={[required()]}
+      />
+      <TextInput
+        source="privateProperties.description"
+        fullWidth
+        multiline
+        rows={4}
+      />
       <ReferenceInput source="accessPolicyId" reference="policies">
         <AutocompleteInput
           optionText="privateProperties.name"

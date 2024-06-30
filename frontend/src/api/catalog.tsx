@@ -35,13 +35,23 @@ export const fetchCatalog = async (edcAddress: string) => {
     if (!Array.isArray(dataset["odrl:hasPolicy"])) {
       dataset["odrl:hasPolicy"] = [dataset["odrl:hasPolicy"]];
     }
+    for (let policy of dataset["odrl:hasPolicy"]) {
+      if (!Array.isArray(policy["odrl:permission"])) {
+        policy["odrl:permission"] = [policy["odrl:permission"]];
+      }
+      if (!Array.isArray(policy["odrl:constraint"])) {
+        policy["odrl:constraint"] = [policy["odrl:constraint"]];
+      }
+    }
   }
 
   return json;
 };
 
-
-export const fetchCatalogDataset = async (edcAddress: string, assetId: string) => {
+export const fetchCatalogDataset = async (
+  edcAddress: string,
+  assetId: string
+) => {
   const response = await fetch(`/api/catalog/dataset`, {
     headers: {
       "Content-Type": "application/json",
@@ -49,12 +59,12 @@ export const fetchCatalogDataset = async (edcAddress: string, assetId: string) =
     method: "POST",
     body: JSON.stringify({
       "@context": {
-        "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+        "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
       },
       "@type": "DatasetRequest",
       "@id": assetId,
-      "counterPartyAddress": edcAddress,
-      "protocol": "dataspace-protocol-http"
+      counterPartyAddress: edcAddress,
+      protocol: "dataspace-protocol-http",
     }),
   });
 
@@ -64,4 +74,4 @@ export const fetchCatalogDataset = async (edcAddress: string, assetId: string) =
   }
 
   return json;
-}
+};

@@ -1,6 +1,5 @@
 import { HttpError } from "react-admin";
 
-
 /**
  * Creates a contract definition by sending a POST request to the server.
  * @param {any} data - The data to be sent in the request body.
@@ -39,4 +38,4 @@ export const fetchContractNegotiation = async (id: string): Promise<any> => {
   }
 
   return json;
-}
+};

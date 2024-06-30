@@ -5,14 +5,21 @@ import {
   fetchAssets,
 } from "./api/assets";
 import { fetchCatalog, fetchCatalogDataset } from "./api/catalog";
-import { fetchContractAgreement, fetchContractAgreements, fetchContractAgreementNegotiation } from "./api/contract_agreements";
+import {
+  fetchContractAgreement,
+  fetchContractAgreements,
+  fetchContractAgreementNegotiation,
+} from "./api/contract_agreements";
 import {
   createContractDefinition,
   deleteContractDefinition,
   fetchContractDefinition,
   fetchContractDefinitions,
 } from "./api/contract_definitions";
-import { createContractNegotiation, fetchContractNegotiation } from "./api/contract_negotiations";
+import {
+  createContractNegotiation,
+  fetchContractNegotiation,
+} from "./api/contract_negotiations";
 import {
   createCustomer,
   deleteCustomer,
@@ -103,7 +110,7 @@ export default {
           hasNextPage: contracts.length === params.pagination.perPage,
           hasPreviousPage: params.pagination.page > 1,
         },
-      }
+      };
     } else if (resource === "contractagreements") {
       const contracts = await fetchContractAgreements(params.pagination);
       return {
@@ -115,7 +122,7 @@ export default {
           hasNextPage: contracts.length === params.pagination.perPage,
           hasPreviousPage: params.pagination.page > 1,
         },
-      }
+      };
     }
   },
   getOne: async (resource: any, params: any) => {
@@ -180,8 +187,13 @@ export default {
       };
     } else if (resource === "contractagreements") {
       const contractAgreement = await fetchContractAgreement(params.id);
-      const negotiation = await fetchContractAgreementNegotiation(contractAgreement['@id']);
-      const dataset = await fetchCatalogDataset(negotiation['counterPartyAddress'], contractAgreement.assetId);
+      const negotiation = await fetchContractAgreementNegotiation(
+        contractAgreement["@id"]
+      );
+      const dataset = await fetchCatalogDataset(
+        negotiation["counterPartyAddress"],
+        contractAgreement.assetId
+      );
       return {
         data: {
           contractAgreement,
@@ -260,7 +272,7 @@ export default {
       const contractDefinition = await createContractDefinition({
         ...params.data,
         "@context": {
-          "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+          "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
         },
       });
       return {
@@ -269,16 +281,16 @@ export default {
           id: contractDefinition["@id"],
         },
       };
-    }  else if (resource === "contractnegotiations") {
+    } else if (resource === "contractnegotiations") {
       const contractNegotation = await createContractNegotiation({
         ...params.data,
         "@type": "ContractRequest",
-        "policy": {
+        policy: {
           ...params.data.policy,
           "@context": "http://www.w3.org/ns/odrl.jsonld",
         },
         "@context": {
-          "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+          "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
         },
       });
       return {
@@ -326,5 +338,5 @@ export default {
         },
       };
     }
-  }
+  },
 };
