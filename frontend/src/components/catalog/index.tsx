@@ -30,6 +30,9 @@ const CreateContractNegotiation = ({ assetId, counterPartyAddress }) => {
                         '@id': record['@id'],
                         // 'assigner': record['odrl:assigner'],
                         'assigner': 'company1',
+                        'extensibleProperties': {
+                            "http://google.de/test": "TEst"
+                        },
                         'obligation': record['odrl:obligation'],
                         'permission': record['odrl:permission'],
                         'prohibition': record['odrl:prohibition'],

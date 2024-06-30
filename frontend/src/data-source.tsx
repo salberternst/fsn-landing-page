@@ -4,7 +4,8 @@ import {
   fetchAsset,
   fetchAssets,
 } from "./api/assets";
-import { fetchCatalog } from "./api/catalog";
+import { fetchCatalog, fetchCatalogDataset } from "./api/catalog";
+import { fetchContractAgreement, fetchContractAgreements, fetchContractAgreementNegotiation } from "./api/contract_agreements";
 import {
   createContractDefinition,
   deleteContractDefinition,
@@ -102,7 +103,19 @@ export default {
           hasNextPage: contracts.length === params.pagination.perPage,
           hasPreviousPage: params.pagination.page > 1,
         },
-      };
+      }
+    } else if (resource === "contractagreements") {
+      const contracts = await fetchContractAgreements(params.pagination);
+      return {
+        data: contracts.map((contract: any) => ({
+          ...contract,
+          id: contract["@id"],
+        })),
+        pageInfo: {
+          hasNextPage: contracts.length === params.pagination.perPage,
+          hasPreviousPage: params.pagination.page > 1,
+        },
+      }
     }
   },
   getOne: async (resource: any, params: any) => {
@@ -163,6 +176,18 @@ export default {
         data: {
           ...contractNegotiation,
           id: contractNegotiation["@id"],
+        },
+      };
+    } else if (resource === "contractagreements") {
+      const contractAgreement = await fetchContractAgreement(params.id);
+      const negotiation = await fetchContractAgreementNegotiation(contractAgreement['@id']);
+      const dataset = await fetchCatalogDataset(negotiation['counterPartyAddress'], contractAgreement.assetId);
+      return {
+        data: {
+          contractAgreement,
+          negotiation,
+          dataset,
+          id: contractAgreement["@id"],
         },
       };
     }
@@ -301,5 +326,5 @@ export default {
         },
       };
     }
-  },
+  }
 };

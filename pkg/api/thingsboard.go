@@ -83,8 +83,6 @@ func (tb *ThingsboardAPI) CreateCustomer(accessToken string, customer Thingsboar
 		return ThingsboardCustomer{}, fmt.Errorf("unable to create customer: %s", resp.String())
 	}
 
-	fmt.Println(createdCustomer.Id.ID)
-
 	return createdCustomer, nil
 }
 

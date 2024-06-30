@@ -68,7 +68,7 @@ func getPolicy(ctx *gin.Context) {
 	}
 
 	claims := ctx.MustGet("access-token-claims").(*middleware.Claims)
-	if policyDefinition.Policy.Assigner != claims.Subject {
+	if policyDefinition.PrivateProperties == nil || policyDefinition.PrivateProperties["createdBy"] != claims.Subject {
 		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
 		return
 	}

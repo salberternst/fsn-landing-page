@@ -47,6 +47,7 @@ import {
 } from "./components/contract_definitions";
 import { Catalog } from "./components/catalog";
 import { ContractNegotationCreate, ContractNegotationShow } from "./components/contract_negotiations";
+import { ContractAgreementNegotiation, ContractAgreementShow, ContractAgreementsList } from "./components/contract_agreements";
 
 const CustomUserMenu = () => {
   const { isLoading, identity } = useGetIdentity();
@@ -92,6 +93,7 @@ const CustomMenu = () => {
         primaryText="Catalog"
         leftIcon={<AutoStoriesIcon />}
       />
+      <Menu.ResourceItem name="contractagreements" />
       <Divider />
       <Menu.Item
         to="/thingsboard"
@@ -186,6 +188,12 @@ export const App = () => (
       options={{ label: "Contract Negotiations" }}
       create={ContractNegotationCreate}
       show={ContractNegotationShow}
+    />
+    <Resource
+      name="contractagreements"
+      options={{ label: "Contract Agreements" }}
+      list={ContractAgreementsList}
+      show={ContractAgreementShow}
     />
   </Admin>
 );

@@ -14,6 +14,7 @@ import {
   ReferenceInput,
   AutocompleteInput,
   required,
+  ArrayField,
 } from "react-admin";
 
 const ContractDefinitionShowBar = () => {
@@ -32,10 +33,21 @@ export const ContractDefinitionsList = () => (
   </List>
 );
 
+
 export const ContractDefinitionShow = (props: any) => (
   <Show {...props} actions={<ContractDefinitionShowBar />}>
     <SimpleShowLayout>
       <TextField source="id" />
+      <TextField label="Type" source="@type" />
+      <TextField source="accessPolicyId" />
+      <TextField source="contractPolicyId" />
+      <ArrayField label="Asset Selector" source="assetsSelector" >
+        <Datagrid bulkActionButtons={false}>
+          <TextField source="operandLeft" />
+          <TextField source="operator" />
+          <TextField source="operandRight" />
+        </Datagrid>
+      </ArrayField>
     </SimpleShowLayout>
   </Show>
 );

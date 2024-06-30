@@ -41,17 +41,15 @@ export const AssetShow = () => {
         <Labeled fullWidth label="ID">
           <TextField source="@id" />
         </Labeled>
-      </SimpleShowLayout>
-      <TabbedShowLayout>
-        <Tab label="Properties">
+        <SimpleShowLayout label="Properties">
           <Labeled fullWidth label="Name">
             <TextField source="properties.name" />
           </Labeled>
           <Labeled fullWidth label="Content Type">
             <TextField source="properties.contenttype" />
           </Labeled>
-        </Tab>
-        <Tab label="Data Address">
+        </SimpleShowLayout>
+        <SimpleShowLayout label="Data Address">
           <Labeled fullWidth label="Type">
             <TextField source="dataAddress.type" />
           </Labeled>
@@ -70,8 +68,8 @@ export const AssetShow = () => {
           <Labeled fullWidth label="Proxy Method">
             <BooleanField source="dataAddress.proxyMethod" looseValue />
           </Labeled>
-        </Tab>
-      </TabbedShowLayout>
+        </SimpleShowLayout>
+      </SimpleShowLayout>
     </Show>
   );
 };

@@ -40,6 +40,11 @@ export const PolicyShow = () => (
     <SimpleShowLayout>
       <SimpleShowLayout>
         <TextField source="id" />
+        <DateField source="createdAt" label="Created At" showTime />
+        <TextField label="Type" source="@type" />
+        <TextField label="Policy Type" source="policy.@type" />
+        <TextField label="Name" source="privateProperties.name" />
+        <TextField label="Description" source="privateProperties.description" />
       </SimpleShowLayout>
     </SimpleShowLayout>
   </Show>

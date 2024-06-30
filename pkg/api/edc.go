@@ -11,22 +11,18 @@ type EdcAPI struct {
 	client *resty.Client
 }
 
-// "@type": "Criterion",
-// "operandLeft": "https://w3id.org/edc/v0.0.1/ns/id",
-// "operator": "=",
-// "operandRight": "assetId"
 type Criterion struct {
-	Type         string `json:"@type"`
-	OperandLeft  string `json:"operandLeft"`
-	OperandRight string `json:"operandRight"`
-	Operator     string `json:"operator"`
+	Type         string      `json:"@type"`
+	OperandLeft  string      `json:"operandLeft"`
+	OperandRight interface{} `json:"operandRight"`
+	Operator     string      `json:"operator"`
 }
 
 type QuerySpec struct {
 	Context map[string]string `json:"@context"`
 	Type    string            `json:"@type"`
-	Offset  uint              `json:"offset"`
-	Limit   uint              `json:"limit"`
+	Offset  uint              `json:"offset,omitempty"`
+	Limit   uint              `json:"limit,omitempty"`
 	// SortOrder        string            `json:"sortOrder"`
 	// SortField        string            `json:"sortField"`
 	FilterExpression []Criterion `json:"filterExpression"`
@@ -82,7 +78,7 @@ type Policy struct {
 	Obligations          []Duty                 `json:"odrl:obligations,omitempty"`
 	Permissions          []Permission           `json:"odrl:permissions,omitempty"`
 	Prohibitions         []Prohibition          `json:"odrl:prohibitions,omitempty"`
-	Target               string                 `json:"odrl:target,omitempty"`
+	Target               interface{}            `json:"odrl:target,omitempty"`
 }
 
 type PolicyDefinition struct {
@@ -190,6 +186,25 @@ type ContractAgreement struct {
 	ContractSigningDate int64   `json:"contractSigningDate,omitempty"`
 	Policy              *Policy `json:"policy,omitempty"`
 	ProviderId          string  `json:"providerId,omitempty"`
+}
+
+type CatalogRequest struct {
+	Context             *interface{} `json:"@context"`
+	Type                string       `json:"@type,omitempty"`
+	CounterPartyAddress string       `json:"counterPartyAddress"`
+	CounterPartyId      string       `json:"counterPartyId,omitempty"`
+	Protocol            string       `json:"protocol"`
+	QuerySpec           *QuerySpec   `json:"querySpec,omitempty"`
+}
+
+type DatasetRequest struct {
+	Context             *interface{} `json:"@context"`
+	Type                string       `json:"@type,omitempty"`
+	Id                  string       `json:"@id"`
+	CounterPartyAddress string       `json:"counterPartyAddress"`
+	CounterPartyId      string       `json:"counterPartyId,omitempty"`
+	Protocol            string       `json:"protocol,omitempty"`
+	QuerySpec           *QuerySpec   `json:"querySpec,omitempty"`
 }
 
 func NewEdcAPI() *EdcAPI {
@@ -348,8 +363,6 @@ func (e *EdcAPI) GetContractDefinitions(querySpec QuerySpec) ([]ContractDefiniti
 		SetResult(&contractsDefinitions).
 		Post("http://edc-provider:19193/management/v2/contractdefinitions/request")
 
-	fmt.Println(resp)
-
 	if err != nil {
 		return nil, err
 	}
@@ -449,4 +462,97 @@ func (e *EdcAPI) GetContractNegotiation(id string) (*ContractNegotiation, error)
 	}
 
 	return &contractNegotiation, nil
+}
+
+func (e *EdcAPI) GetContractAgreements(querySpec QuerySpec) ([]ContractAgreement, error) {
+	var contractAgreements []ContractAgreement
+	resp, err := e.client.R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(querySpec).
+		SetResult(&contractAgreements).
+		Post("http://edc-provider:19193/management/v2/contractagreements/request")
+
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode() != 200 {
+		return nil, fmt.Errorf("unable to get contract agreements: %s", resp.String())
+	}
+
+	return contractAgreements, nil
+}
+
+func (e *EdcAPI) GetContractAgreement(id string) (*ContractAgreement, error) {
+	contractAgreement := ContractAgreement{}
+	resp, err := e.client.R().
+		SetHeader("Content-Type", "application/json").
+		SetResult(&contractAgreement).
+		Get("http://edc-provider:19193/management/v2/contractagreements/" + id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode() != 200 {
+		return nil, fmt.Errorf("unable to get contract agreement: %s", resp.String())
+	}
+
+	return &contractAgreement, nil
+}
+
+func (e *EdcAPI) GetContractAgreementNegotiation(id string) (*ContractNegotiation, error) {
+	contractNegotiation := ContractNegotiation{}
+	resp, err := e.client.R().
+		SetHeader("Content-Type", "application/json").
+		SetResult(&contractNegotiation).
+		Get("http://edc-provider:19193/management/v2/contractagreements/" + id + "/negotiation")
+
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode() != 200 {
+		return nil, fmt.Errorf("unable to get contract agreement negotiation: %s", resp.String())
+	}
+
+	return &contractNegotiation, nil
+}
+
+func (e *EdcAPI) GetCatalog(catalogRequest CatalogRequest) (map[string]interface{}, error) {
+	var catalog map[string]interface{}
+	resp, err := e.client.R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(catalogRequest).
+		SetResult(&catalog).
+		Post("http://edc-provider:19193/management/v2/catalog/request")
+
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode() != 200 {
+		return nil, fmt.Errorf("unable to get catalogs: %s", resp.String())
+	}
+
+	return catalog, nil
+}
+
+func (e *EdcAPI) GetCatalogDataset(datasetRequest DatasetRequest) (map[string]interface{}, error) {
+	var dataset map[string]interface{}
+	resp, err := e.client.R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(datasetRequest).
+		SetResult(&dataset).
+		Post("http://edc-provider:19193/management/v2/catalog/dataset/request")
+
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode() != 200 {
+		return nil, fmt.Errorf("unable to get dataset: %s", resp.String())
+	}
+
+	return dataset, nil
 }

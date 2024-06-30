@@ -106,8 +106,6 @@ func getUser(ctx *gin.Context) {
 		})
 	}
 
-	fmt.Println(groups)
-
 	user := User{
 		Id:            *keycloakUser.ID,
 		Email:         *keycloakUser.Email,

@@ -1,7 +1,7 @@
 import { HttpError } from "react-admin";
 
 export const fetchCatalog = async (edcAddress: string) => {
-  const response = await fetch(`/management/v2/catalog/request`, {
+  const response = await fetch(`/api/catalog`, {
     headers: {
       "Content-Type": "application/json",
     },
@@ -39,3 +39,29 @@ export const fetchCatalog = async (edcAddress: string) => {
 
   return json;
 };
+
+
+export const fetchCatalogDataset = async (edcAddress: string, assetId: string) => {
+  const response = await fetch(`/api/catalog/dataset`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+    body: JSON.stringify({
+      "@context": {
+        "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+      },
+      "@type": "DatasetRequest",
+      "@id": assetId,
+      "counterPartyAddress": edcAddress,
+      "protocol": "dataspace-protocol-http"
+    }),
+  });
+
+  const json = await response.json();
+  if (response.ok === false) {
+    throw new HttpError(json.message, response.status);
+  }
+
+  return json;
+}
