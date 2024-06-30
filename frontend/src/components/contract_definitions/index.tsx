@@ -15,37 +15,46 @@ import {
   AutocompleteInput,
   required,
   ArrayField,
+  useCreatePath,
+  ReferenceField
 } from "react-admin";
+import { Link } from 'react-router-dom';
 
-const ContractDefinitionShowBar = () => {
-  return (
-    <TopToolbar>
-      <DeleteButton mutationMode="pessimistic" />
-    </TopToolbar>
-  );
-};
+const ContractDefinitionShowBar = () => (
+  <TopToolbar>
+    <DeleteButton mutationMode="pessimistic" />
+  </TopToolbar>
+)
 
 export const ContractDefinitionsList = () => (
   <List empty={false} hasCreate={true} exporter={false}>
     <Datagrid bulkActionButtons={false} rowClick="show">
       <TextField source="id" />
+      <TextField label="Name" source="privateProperties.name" />
+      <TextField label="Description" source="privateProperties.description" />
     </Datagrid>
   </List>
 );
 
 
-export const ContractDefinitionShow = (props: any) => (
-  <Show {...props} actions={<ContractDefinitionShowBar />}>
+export const ContractDefinitionShow = () => (
+  <Show actions={<ContractDefinitionShowBar />}>
     <SimpleShowLayout>
       <TextField source="id" />
       <TextField label="Type" source="@type" />
-      <TextField source="accessPolicyId" />
-      <TextField source="contractPolicyId" />
+      <ReferenceField source="accessPolicyId" reference="policies" link="show">
+          <TextField source="id"/>
+      </ReferenceField>
+      <ReferenceField source="contractPolicyId" reference="policies" link="show">
+          <TextField source="id"/>
+      </ReferenceField>
       <ArrayField label="Asset Selector" source="assetsSelector" >
         <Datagrid bulkActionButtons={false}>
           <TextField source="operandLeft" />
           <TextField source="operator" />
-          <TextField source="operandRight" />
+          <ReferenceField source="operandRight" reference="assets" link="show">
+              <TextField source="id"/>
+          </ReferenceField>
         </Datagrid>
       </ArrayField>
     </SimpleShowLayout>
@@ -55,6 +64,8 @@ export const ContractDefinitionShow = (props: any) => (
 export const ContractDefinitionCreate = (props: any) => (
   <Create {...props}>
     <SimpleForm>
+      <TextInput source="privateProperties.name" fullWidth validate={[required()]} />
+      <TextInput source="privateProperties.description" fullWidth multiline rows={4}/>
       <ReferenceInput source="accessPolicyId" reference="policies">
         <AutocompleteInput
           optionText="privateProperties.name"

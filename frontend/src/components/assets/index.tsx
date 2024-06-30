@@ -4,8 +4,6 @@ import {
   Datagrid,
   TextField,
   Show,
-  TabbedShowLayout,
-  Tab,
   SimpleShowLayout,
   TopToolbar,
   DeleteButton,
@@ -41,34 +39,38 @@ export const AssetShow = () => {
         <Labeled fullWidth label="ID">
           <TextField source="@id" />
         </Labeled>
-        <SimpleShowLayout label="Properties">
-          <Labeled fullWidth label="Name">
-            <TextField source="properties.name" />
-          </Labeled>
-          <Labeled fullWidth label="Content Type">
-            <TextField source="properties.contenttype" />
-          </Labeled>
-        </SimpleShowLayout>
-        <SimpleShowLayout label="Data Address">
-          <Labeled fullWidth label="Type">
-            <TextField source="dataAddress.type" />
-          </Labeled>
-          <Labeled fullWidth label="Base URL">
-            <TextField source="dataAddress.baseUrl" />
-          </Labeled>
-          <Labeled fullWidth label="Proxy Path">
-            <BooleanField source="dataAddress.proxyPath" looseValue />
-          </Labeled>
-          <Labeled fullWidth label="Proxy Query Params">
-            <BooleanField source="dataAddress.proxyQueryParams" looseValue />
-          </Labeled>
-          <Labeled fullWidth label="Proxy Body">
-            <BooleanField source="dataAddress.proxyBody" looseValue />
-          </Labeled>
-          <Labeled fullWidth label="Proxy Method">
-            <BooleanField source="dataAddress.proxyMethod" looseValue />
-          </Labeled>
-        </SimpleShowLayout>
+        <Labeled label="Properties">
+          <SimpleShowLayout>
+            <Labeled fullWidth label="Name">
+              <TextField source="properties.name" />
+            </Labeled>
+            <Labeled fullWidth label="Content Type">
+              <TextField source="properties.contenttype" />
+            </Labeled>
+          </SimpleShowLayout>
+        </Labeled>
+        <Labeled label="Data Address">
+          <SimpleShowLayout>
+            <Labeled fullWidth label="Type">
+              <TextField source="dataAddress.type" />
+            </Labeled>
+            <Labeled fullWidth label="Base URL">
+              <TextField source="dataAddress.baseUrl" />
+            </Labeled>
+            <Labeled fullWidth label="Proxy Path">
+              <BooleanField source="dataAddress.proxyPath" looseValue />
+            </Labeled>
+            <Labeled fullWidth label="Proxy Query Params">
+              <BooleanField source="dataAddress.proxyQueryParams" looseValue />
+            </Labeled>
+            <Labeled fullWidth label="Proxy Body">
+              <BooleanField source="dataAddress.proxyBody" looseValue />
+            </Labeled>
+            <Labeled fullWidth label="Proxy Method">
+              <BooleanField source="dataAddress.proxyMethod" looseValue />
+            </Labeled>
+          </SimpleShowLayout>
+        </Labeled>
       </SimpleShowLayout>
     </Show>
   );

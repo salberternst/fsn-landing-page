@@ -30,6 +30,7 @@ export const PoliciesList = () => (
     <Datagrid bulkActionButtons={false} rowClick="show">
       <TextField source="id" />
       <TextField source="privateProperties.name" label="Name" />
+      <TextField source="privateProperties.description" label="Description" />
       <DateField showTime={true} source="createdAt" label="Created At" />
     </Datagrid>
   </List>

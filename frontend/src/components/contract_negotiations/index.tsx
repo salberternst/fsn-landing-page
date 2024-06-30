@@ -9,16 +9,17 @@ import {
     Show,
     SimpleShowLayout,
     TextField,
-    ShowGuesser,
     useRefresh,
     DateField,
     useShowController,
-    LinearProgress
+    LinearProgress,
+    useCreatePath
 } from "react-admin";
 import CodeMirror from "@uiw/react-codemirror";
 import { json } from "@codemirror/lang-json";
 import { EditorState } from "@codemirror/state";
 import { useEffect } from "react";
+import { Navigate } from 'react-router-dom';
 
 const ContractNegotiationPolicyInput = () => {
     const { field } = useInput({ source: "policy" });
@@ -58,6 +59,12 @@ export const ContractNegotationCreate = () => {
 export const ContractNegotationShow = () => {
     const refresh = useRefresh()
     const { error, isLoading, record } = useShowController()
+    const createPath = useCreatePath()
+
+    useEffect(() => {
+        const interval = setInterval(refresh, 5000);
+        return () => clearInterval(interval);
+    }, [refresh]);
 
     if (isLoading) {
         return <LinearProgress />
@@ -66,11 +73,6 @@ export const ContractNegotationShow = () => {
     if (error) {
         return <div>Error!</div>;
     }
-
-    useEffect(() => {
-        const interval = setInterval(refresh, 5000);
-        return () => clearInterval(interval);
-    }, []);
 
     return (
         <Show>
@@ -83,6 +85,11 @@ export const ContractNegotationShow = () => {
                 <TextField source="state" />
                 {record.contractAgreementId && <TextField source="contractAgreementId" label="Contract Agreement Id"/>}
                 {record.errorDetail && <TextField source="errorDetail" label="Error"/>}
+                {record.state === "FINALIZED" && <Navigate to={createPath({
+                    resource: "contractagreements",
+                    type: "show",
+                    id: record.contractAgreementId
+                })}/>}
             </SimpleShowLayout>
         </Show>
     )

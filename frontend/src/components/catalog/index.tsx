@@ -13,10 +13,8 @@ import MuiButton from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
 import { Link } from 'react-router-dom';
 
-
-const CreateContractNegotiation = ({ assetId, counterPartyAddress }) => {
+const CreateContractNegotiation = ({ assetId, counterPartyAddress, participantId }) => {
     const record = useRecordContext()
-
     return (
         <MuiButton
             component={Link}
@@ -28,11 +26,7 @@ const CreateContractNegotiation = ({ assetId, counterPartyAddress }) => {
                     policy: {
                         '@type': record['@type'].replace('odrl:', ''),
                         '@id': record['@id'],
-                        // 'assigner': record['odrl:assigner'],
-                        'assigner': 'company1',
-                        'extensibleProperties': {
-                            "http://google.de/test": "TEst"
-                        },
+                        'assigner': participantId,
                         'obligation': record['odrl:obligation'],
                         'permission': record['odrl:permission'],
                         'prohibition': record['odrl:prohibition'],
@@ -50,7 +44,7 @@ const CreateContractNegotiation = ({ assetId, counterPartyAddress }) => {
 const ExtendedPolicyPanel = () => {
     return (
         <SimpleShowLayout>
-            {/* <ArrayField source="odrl:permission" label="Permissions">
+            <ArrayField source="odrl:permission" label="Permissions">
                 <Datagrid bulkActionButtons={false}>
                     <TextField source="@type" label="Type" />
                     <TextField source="odrl:action" label="Action" />
@@ -76,7 +70,7 @@ const ExtendedPolicyPanel = () => {
                     <TextField source="odrl:leftOperand" label="Left Operand" />
                     <TextField source="odrl:rightOperand" label="Right Operand" />
                 </Datagrid>
-            </ArrayField> */}
+            </ArrayField>
         </SimpleShowLayout>
     );
 };
@@ -102,18 +96,25 @@ const ExtendedDatasetPanel = () => {
     );
 };
 
-const PoliciesShow = ({ counterPartyAddress }) => {
+const PoliciesShow = ({ counterPartyAddress, participantId }) => {
     const record = useRecordContext()
     return (
         <ArrayField source="odrl:hasPolicy" label="Policies">
             <SingleFieldList sx={{ flexDirection: "column" }}>
-                <CreateContractNegotiation assetId={record['@id']} counterPartyAddress={counterPartyAddress}/>
+                <CreateContractNegotiation 
+                    assetId={record['@id']}
+                    participantId={participantId}
+                    counterPartyAddress={counterPartyAddress}
+                />
             </SingleFieldList>
         </ArrayField>
     )
 }
 
 const CatalogShow = ({ counterPartyAddress }) => {
+    const record = useRecordContext()
+    if (!record) return null;
+
     return (
         <SimpleShowLayout>
             <TextField source="@id" />
@@ -123,7 +124,7 @@ const CatalogShow = ({ counterPartyAddress }) => {
                     <TextField source="@id" label="Id" />
                     <TextField source="name" label="Name" />
                     <TextField source="contenttype" label="Content Type" />
-                    <PoliciesShow counterPartyAddress={counterPartyAddress}/>
+                    <PoliciesShow counterPartyAddress={counterPartyAddress} participantId={record.participantId}/>
                 </Datagrid>
             </ArrayField>
             <ArrayField source="dcat:service" label="Services">
