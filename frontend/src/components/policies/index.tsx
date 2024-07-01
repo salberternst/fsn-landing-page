@@ -28,10 +28,23 @@ const PolicyShowBar = () => {
 export const PoliciesList = () => (
   <List empty={false} hasCreate={true} exporter={false}>
     <Datagrid bulkActionButtons={false} rowClick="show">
-      <TextField source="id" />
-      <TextField source="privateProperties.name" label="Name" />
-      <TextField source="privateProperties.description" label="Description" />
-      <DateField showTime={true} source="createdAt" label="Created At" />
+      <TextField source="id" sortable={false} />
+      <TextField
+        source="privateProperties.name"
+        label="Name"
+        sortable={false}
+      />
+      <TextField
+        source="privateProperties.description"
+        label="Description"
+        sortable={false}
+      />
+      <DateField
+        showTime={true}
+        source="createdAt"
+        label="Created At"
+        sortable={false}
+      />
     </Datagrid>
   </List>
 );

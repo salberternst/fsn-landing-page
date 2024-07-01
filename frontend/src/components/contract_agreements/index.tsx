@@ -62,7 +62,7 @@ export const ContractAgreementShow = () => {
         </Labeled>
         <Labeled label="Negotiation">
           <SimpleShowLayout>
-            <TextField label="Id" source="negotiation.id" />
+            <TextField label="Id" source="negotiation.@id" />
             <TextField label="Type" source="negotiation.@type" />
             <TextField
               label="Contract Agreement Id"
@@ -88,15 +88,28 @@ export const ContractAgreementShow = () => {
 export const ContractAgreementsList = () => (
   <List empty={false} hasCreate={true} exporter={false}>
     <Datagrid bulkActionButtons={false} rowClick="show">
-      <TextField source="id" />
-      <TextField source="contractAgreement.assetId" />
-      <TextField source="contractAgreement.consumerId" />
-      <TextField source="contractAgreement.providerId" />
+      <TextField source="id" sortable={false} />
+      <TextField
+        source="contractAgreement.assetId"
+        sortable={false}
+        label="Asset"
+      />
+      <TextField
+        source="contractAgreement.consumerId"
+        sortable={false}
+        label="Consumer"
+      />
+      <TextField
+        source="contractAgreement.providerId"
+        sortable={false}
+        label="Provider"
+      />
       <DateField
         label="Contract Signing Date"
         source="contractAgreement.contractSigningDate"
         transform={(v: number) => new Date(v * 1000)}
         showTime
+        sortable={false}
       />
     </Datagrid>
   </List>

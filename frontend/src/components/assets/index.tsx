@@ -25,9 +25,13 @@ const AssetShowBar = () => {
 export const AssetsList = () => (
   <List empty={false} hasCreate={true} exporter={false}>
     <Datagrid bulkActionButtons={false} rowClick="show">
-      <TextField source="id" />
-      <TextField source="properties.name" label="Name" />
-      <TextField source="dataAddress.type" label="Data Address Type" />
+      <TextField source="id" sortable={false} />
+      <TextField source="properties.name" label="Name" sortable={false} />
+      <TextField
+        source="dataAddress.type"
+        label="Data Address Type"
+        sortable={false}
+      />
     </Datagrid>
   </List>
 );

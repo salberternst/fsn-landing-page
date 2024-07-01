@@ -346,6 +346,28 @@ func (tb *ThingsboardAPI) CreateDeviceAttributes(accessToken string, deviceID st
 	return nil
 }
 
+func (tb *ThingsboardAPI) DeleteDeviceAttribute(accessToken string, deviceID string, attribute string) error {
+	thingsboardToken, err := tb.ExchangeToken(accessToken)
+	if err != nil {
+		return err
+	}
+
+	resp, err := tb.client.R().
+		SetHeader("Content-Type", "application/json").
+		SetHeader("X-Authorization", "Bearer "+thingsboardToken).
+		Delete("http://thingsboard:9090/api/plugins/telemetry/DEVICE/" + deviceID + "/SERVER_SCOPE?keys=" + attribute)
+
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode() != 200 {
+		return fmt.Errorf("unable to delete attribute: %s", resp.String())
+	}
+
+	return nil
+}
+
 func (tb *ThingsboardAPI) GetDeviceCredentials(accessToken string, deviceID string) (map[string]interface{}, error) {
 	thingsboardToken, err := tb.ExchangeToken(accessToken)
 	if err != nil {

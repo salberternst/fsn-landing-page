@@ -27,9 +27,17 @@ const ContractDefinitionShowBar = () => (
 export const ContractDefinitionsList = () => (
   <List empty={false} hasCreate={true} exporter={false}>
     <Datagrid bulkActionButtons={false} rowClick="show">
-      <TextField source="id" />
-      <TextField label="Name" source="privateProperties.name" />
-      <TextField label="Description" source="privateProperties.description" />
+      <TextField source="id" sortable={false} />
+      <TextField
+        label="Name"
+        source="privateProperties.name"
+        sortable={false}
+      />
+      <TextField
+        label="Description"
+        source="privateProperties.description"
+        sortable={false}
+      />
     </Datagrid>
   </List>
 );

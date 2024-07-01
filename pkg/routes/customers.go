@@ -104,17 +104,6 @@ func getCustomers(ctx *gin.Context) {
 		}
 	}
 
-	customers = append(customers, Customer{
-		ID:   "13814000-1dd2-11b2-8080-808080808080",
-		Name: "None",
-		Thingsboard: &ThingsboardCustomer{
-			Id: "13814000-1dd2-11b2-8080-808080808080",
-		},
-		Fuseki: &FusekiDataset{
-			Name: claims.TenantId,
-		},
-	})
-
 	ctx.JSON(http.StatusOK, customers)
 }
 
@@ -398,8 +387,7 @@ func updateCustomer(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "customer updated",
-		"status":  http.StatusOK,
+		"id": customerID,
 	})
 }
 

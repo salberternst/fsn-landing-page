@@ -29,9 +29,9 @@ const CustomerShowBar = () => {
 export const CustomersList = () => (
   <List empty={false} hasCreate={true} exporter={false}>
     <Datagrid bulkActionButtons={false} rowClick="show">
-      <TextField source="id" />
-      <TextField source="name" label="Name" />
-      <TextField source="description" label="Description" />
+      <TextField source="id" sortable={false} />
+      <TextField source="name" label="Name" sortable={false} />
+      <TextField source="description" label="Description" sortable={false} />
     </Datagrid>
   </List>
 );
@@ -50,7 +50,7 @@ export const CustomerShow = () => {
           <TextField source="name" />
         </Labeled>
         <Labeled fullWidth label="Description">
-          <TextField source="description" />
+          <TextField source="description" emptyText="-"/>
         </Labeled>
       </SimpleShowLayout>
       <Divider>Thingsboard</Divider>
@@ -64,25 +64,25 @@ export const CustomerShow = () => {
           <TextField
             source="thingsboard.country"
             label="Country"
-            defaultValue="-"
+            emptyText="-"
           />
-          <TextField source="thingsboard.city" label="City" defaultValue="-" />
+          <TextField source="thingsboard.city" label="City" emptyText="-" />
           <TextField
             source="thingsboard.address"
             label="Address"
-            defaultValue="-"
+            emptyText="-"
           />
           <TextField
             source="thingsboard.phone"
             label="Phone"
-            defaultValue="-"
+            emptyText="-"
           />
           <TextField
             source="thingsboard.email"
             label="Email"
-            defaultValue="-"
+            emptyText="-"
           />
-          <TextField source="thingsboard.zip" label="ZIP" defaultValue="-" />
+          <TextField source="thingsboard.zip" label="ZIP" emptyText="-" />
         </SimpleShowLayout>
       )}
       <Divider>Fuseki</Divider>

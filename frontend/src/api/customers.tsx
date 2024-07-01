@@ -34,7 +34,6 @@ export const fetchCustomers = async (pagination: any) => {
  * @throws {HttpError} If the API request fails.
  */
 export const fetchCustomer = async (id: string) => {
-  console.log(id);
   const response = await fetch(`/api/portal/customers/${id}`, {
     headers: {
       "Content-Type": "application/json",
@@ -102,7 +101,7 @@ export const createCustomer = async (data: any) => {
  * @throws {HttpError} If the server returns an error response.
  */
 export const updateCustomer = async (id: string, data: any) => {
-  const response = await fetch(`/api/customers/${id}`, {
+  const response = await fetch(`/api/portal/customers/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

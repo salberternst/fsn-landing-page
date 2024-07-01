@@ -122,8 +122,8 @@ const CatalogShow = ({ counterPartyAddress }) => {
 
   return (
     <SimpleShowLayout>
-      <TextField source="@id" />
-      <TextField source="dspace:participantId" />
+      <TextField source="@id" label="Id" />
+      <TextField source="dspace:participantId" label="Participant Id" />
       <ArrayField source="dcat:dataset" label="Datasets">
         <Datagrid bulkActionButtons={false} expand={<ExtendedDatasetPanel />}>
           <TextField source="@id" label="Id" />

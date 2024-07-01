@@ -13,12 +13,16 @@ import Divider from "@mui/material/Divider";
 export const UsersList = () => (
   <List empty={false} hasCreate={true} exporter={false}>
     <Datagrid bulkActionButtons={false} rowClick="show">
-      <TextField source="id" />
-      <TextField source="email" label="Email" />
-      <BooleanField source="emailVerified" label="Email Verified" />
-      <TextField source="firstName" label="First Name" />
-      <TextField source="lastName" label="Last Name" />
-      <BooleanField source="isAdmin" label="Admin" />
+      <TextField source="id" sortable={false} />
+      <TextField source="email" label="Email" sortable={false} />
+      <BooleanField
+        source="emailVerified"
+        label="Email Verified"
+        sortable={false}
+      />
+      <TextField source="firstName" label="First Name" sortable={false} />
+      <TextField source="lastName" label="Last Name" sortable={false} />
+      <BooleanField source="isAdmin" label="Admin" sortable={false} />
     </Datagrid>
   </List>
 );
