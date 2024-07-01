@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -27,7 +28,11 @@ type AssetQuery struct {
 func getAssets(ctx *gin.Context) {
 	assetQuery := AssetQuery{}
 	if err := ctx.BindQuery(&assetQuery); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"status":  http.StatusBadRequest,
+			"error":   "bad_request",
+			"message": fmt.Sprintf("unable to bind asset query: %v", err),
+		})
 		return
 	}
 
@@ -55,7 +60,11 @@ func getAssets(ctx *gin.Context) {
 
 	assets, err := edcApi.GetAssets(querySpec)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, querySpec)
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_get_assets",
+			"message": fmt.Sprintf("unable to get assets: %v", err),
+		})
 		return
 	}
 
@@ -69,7 +78,11 @@ func getAsset(ctx *gin.Context) {
 
 	asset, err := edcApi.GetAsset(id)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_get_asset",
+			"message": fmt.Sprintf("unable to get asset: %v", err),
+		})
 		return
 	}
 
@@ -91,18 +104,30 @@ func deleteAsset(ctx *gin.Context) {
 
 	asset, err := edcApi.GetAsset(id)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_get_asset",
+			"message": fmt.Sprintf("unable to get asset: %v", err),
+		})
 		return
 	}
 
 	if asset.PrivateProperties == nil || asset.PrivateProperties["createdBy"] != claims.Subject {
-		ctx.JSON(http.StatusForbidden, gin.H{"error": "You are not allowed to delete this asset"})
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"status":  http.StatusForbidden,
+			"error":   "forbidden",
+			"message": "You are not allowed to delete this asset",
+		})
 		return
 	}
 
 	err = edcApi.DeleteAsset(id)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_delete_asset",
+			"message": fmt.Sprintf("unable to delete asset: %v", err),
+		})
 		return
 	}
 
@@ -114,7 +139,11 @@ func deleteAsset(ctx *gin.Context) {
 func createAsset(ctx *gin.Context) {
 	var asset api.Asset
 	if err := ctx.BindJSON(&asset); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"status":  http.StatusBadRequest,
+			"error":   "bad_request",
+			"message": fmt.Sprintf("unable to bind asset: %v", err),
+		})
 		return
 	}
 
@@ -128,7 +157,11 @@ func createAsset(ctx *gin.Context) {
 	edcApi := ctx.MustGet("edc-api").(*api.EdcAPI)
 	createdAsset, err := edcApi.CreateAsset(asset)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_create_asset",
+			"message": fmt.Sprintf("unable to create asset: %v", err),
+		})
 		return
 	}
 

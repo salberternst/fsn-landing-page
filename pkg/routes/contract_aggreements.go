@@ -92,7 +92,11 @@ func GetContractAgreement(ctx *gin.Context) {
 
 	contractAgreement, err := edcApi.GetContractAgreement(id)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_get_contract_agreement",
+			"message": fmt.Sprintf("unable to get contract agreement: %v", err),
+		})
 		return
 	}
 
@@ -109,7 +113,11 @@ func GetContractAgreementNegotiation(ctx *gin.Context) {
 
 	contractAgreementNegotiation, err := edcApi.GetContractAgreementNegotiation(id)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_get_contract_agreement_negotiation",
+			"message": fmt.Sprintf("unable to get contract agreement negotiation: %v", err),
+		})
 		return
 	}
 

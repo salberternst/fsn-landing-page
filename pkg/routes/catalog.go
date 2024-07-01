@@ -47,7 +47,11 @@ func GetCatalogDataset(ctx *gin.Context) {
 
 	catalogDataset, err := edcApi.GetCatalogDataset(datasetRequest)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_get_catalog_dataset",
+			"message": fmt.Sprintf("unable to get catalog dataset: %v", err),
+		})
 		return
 	}
 

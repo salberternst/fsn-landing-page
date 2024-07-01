@@ -50,7 +50,11 @@ func getPolicies(ctx *gin.Context) {
 	edcApi := ctx.MustGet("edc-api").(*api.EdcAPI)
 	policies, err := edcApi.GetPolicies(querySpec)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_get_policies",
+			"message": err.Error(),
+		})
 		return
 	}
 
@@ -63,13 +67,21 @@ func getPolicy(ctx *gin.Context) {
 	edcApi := ctx.MustGet("edc-api").(*api.EdcAPI)
 	policyDefinition, err := edcApi.GetPolicy(id)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_get_policy",
+			"message": err.Error(),
+		})
 		return
 	}
 
 	claims := ctx.MustGet("access-token-claims").(*middleware.Claims)
 	if policyDefinition.PrivateProperties == nil || policyDefinition.PrivateProperties["createdBy"] != claims.Subject {
-		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"status":  http.StatusForbidden,
+			"error":   "forbidden",
+			"message": "You are not allowed to access this policy",
+		})
 		return
 	}
 
@@ -98,7 +110,11 @@ func createPolicy(ctx *gin.Context) {
 	edcApi := ctx.MustGet("edc-api").(*api.EdcAPI)
 	createdPolicy, err := edcApi.CreatePolicy(policyDefinition)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_create_policy",
+			"message": err.Error(),
+		})
 		return
 	}
 
@@ -112,19 +128,31 @@ func deletePolicy(ctx *gin.Context) {
 
 	policy, err := edcApi.GetPolicy(id)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_get_policy",
+			"message": err.Error(),
+		})
 		return
 	}
 
 	claims := ctx.MustGet("access-token-claims").(*middleware.Claims)
 	if policy.Policy.Assigner != claims.Subject {
-		ctx.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"status":  http.StatusForbidden,
+			"error":   "forbidden",
+			"message": "You are not allowed to delete this policy",
+		})
 		return
 	}
 
 	err = edcApi.DeletePolicy(id)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_delete_policy",
+			"message": err.Error(),
+		})
 		return
 	}
 

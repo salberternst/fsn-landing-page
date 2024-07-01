@@ -38,7 +38,11 @@ func getDevices(ctx *gin.Context) {
 	}
 
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_get_devices",
+			"message": err.Error(),
+		})
 		return
 	}
 
@@ -52,19 +56,31 @@ func getDevice(ctx *gin.Context) {
 
 	device, err := thingsboardApi.GetDevice(accessToken, deviceId)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_get_device",
+			"message": err.Error(),
+		})
 		return
 	}
 
 	deviceAttributes, err := thingsboardApi.GetDeviceAttributes(accessToken, deviceId)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_get_device_attributes",
+			"message": err.Error(),
+		})
 		return
 	}
 
 	deviceCredentials, err := thingsboardApi.GetDeviceCredentials(accessToken, deviceId)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_get_device_credentials",
+			"message": err.Error(),
+		})
 		return
 	}
 
@@ -80,7 +96,11 @@ func createDevice(ctx *gin.Context) {
 
 	createDevice := CreateDevice{}
 	if err := ctx.BindJSON(&createDevice); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"status":  http.StatusBadRequest,
+			"error":   "bad_request",
+			"message": err.Error(),
+		})
 		return
 	}
 
@@ -98,7 +118,11 @@ func createDevice(ctx *gin.Context) {
 
 	createdDevice, err := thingsboardApi.CreateDevice(accessToken, thingsboardCreateDevice)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_create_device",
+			"message": err.Error(),
+		})
 		return
 	}
 
@@ -109,7 +133,11 @@ func createDevice(ctx *gin.Context) {
 
 	err = thingsboardApi.CreateDeviceAttributes(accessToken, deviceId, attributes)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_create_device_attributes",
+			"message": err.Error(),
+		})
 		return
 	}
 
@@ -123,7 +151,11 @@ func deleteDevice(ctx *gin.Context) {
 
 	err := thingsboardApi.DeleteDevice(accessToken, deviceId)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_delete_device",
+			"message": err.Error(),
+		})
 		return
 	}
 
@@ -137,13 +169,21 @@ func updateDevice(ctx *gin.Context) {
 
 	updateDevice := UpdateDevice{}
 	if err := ctx.BindJSON(&updateDevice); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"status":  http.StatusBadRequest,
+			"error":   "bad_request",
+			"message": err.Error(),
+		})
 		return
 	}
 
 	device, err := thingsboardApi.GetDevice(accessToken, deviceId)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_get_device",
+			"message": err.Error(),
+		})
 		return
 	}
 
@@ -164,7 +204,11 @@ func updateDevice(ctx *gin.Context) {
 
 	err = thingsboardApi.UpdateDevice(accessToken, deviceId, device)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_update_device",
+			"message": err.Error(),
+		})
 		return
 	}
 
@@ -174,13 +218,21 @@ func updateDevice(ctx *gin.Context) {
 
 		err = thingsboardApi.CreateDeviceAttributes(accessToken, deviceId, attributes)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"status":  http.StatusInternalServerError,
+				"error":   "unable_to_create_device_attributes",
+				"message": err.Error(),
+			})
 			return
 		}
 	} else {
 		err = thingsboardApi.DeleteDeviceAttribute(accessToken, deviceId, "thing-model")
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"status":  http.StatusInternalServerError,
+				"error":   "unable_to_delete_device_attribute",
+				"message": err.Error(),
+			})
 			return
 		}
 	}

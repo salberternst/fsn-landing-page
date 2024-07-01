@@ -73,7 +73,11 @@ func getCustomers(ctx *gin.Context) {
 		BriefRepresentation: &briefRepresentation,
 	})
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"error":   "unable_to_get_customers",
+			"message": err.Error(),
+		})
 		return
 	}
 

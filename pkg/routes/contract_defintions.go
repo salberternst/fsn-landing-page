@@ -118,8 +118,7 @@ func DeleteContractDefinition(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"status":  http.StatusOK,
-		"message": "contract definition deleted successfully",
+		"id": contractId,
 	})
 }
 
