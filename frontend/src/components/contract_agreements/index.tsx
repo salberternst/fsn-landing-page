@@ -7,7 +7,6 @@ import {
   SimpleShowLayout,
   DateField,
   useShowController,
-  Button,
 } from "react-admin";
 import MuiButton from "@mui/material/Button";
 import { Link } from "react-router-dom";

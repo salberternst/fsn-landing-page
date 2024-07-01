@@ -13,14 +13,14 @@ import (
 
 type FusekiDataset struct {
 	Name  string `json:"name"`
-	State bool   `json:"state"`
+	State bool   `json:"state,omitempty"`
 	Error string `json:"error,omitempty"`
 }
 
 type ThingsboardCustomer struct {
 	Id       string `json:"id,omitempty"`
-	Title    string `json:"title"`
-	Name     string `json:"name"`
+	Title    string `json:"title,omitempty"`
+	Name     string `json:"name,omitempty"`
 	Email    string `json:"email,omitempty"`
 	Phone    string `json:"phone,omitempty"`
 	Country  string `json:"country,omitempty"`
@@ -80,9 +80,14 @@ func getCustomers(ctx *gin.Context) {
 	customers := make([]Customer, len(groups))
 	for i, group := range groups {
 		description := ""
+		customerId := ""
+
 		if group.Attributes != nil {
 			if desc, ok := (*group.Attributes)["description"]; ok {
 				description = desc[0]
+			}
+			if id, ok := (*group.Attributes)["customer-id"]; ok {
+				customerId = id[0]
 			}
 		}
 
@@ -90,8 +95,25 @@ func getCustomers(ctx *gin.Context) {
 			ID:          *group.ID,
 			Name:        *group.Name,
 			Description: description,
+			Thingsboard: &ThingsboardCustomer{
+				Id: customerId,
+			},
+			Fuseki: &FusekiDataset{
+				Name: claims.TenantId + "-" + customerId,
+			},
 		}
 	}
+
+	customers = append(customers, Customer{
+		ID:   "13814000-1dd2-11b2-8080-808080808080",
+		Name: "None",
+		Thingsboard: &ThingsboardCustomer{
+			Id: "13814000-1dd2-11b2-8080-808080808080",
+		},
+		Fuseki: &FusekiDataset{
+			Name: claims.TenantId,
+		},
+	})
 
 	ctx.JSON(http.StatusOK, customers)
 }
@@ -232,6 +254,7 @@ func createCustomer(ctx *gin.Context) {
 			"created-at":  {time.Now().String()},
 		},
 	})
+
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"status":  http.StatusInternalServerError,

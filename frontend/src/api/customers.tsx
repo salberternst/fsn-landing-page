@@ -34,6 +34,7 @@ export const fetchCustomers = async (pagination: any) => {
  * @throws {HttpError} If the API request fails.
  */
 export const fetchCustomer = async (id: string) => {
+  console.log(id);
   const response = await fetch(`/api/portal/customers/${id}`, {
     headers: {
       "Content-Type": "application/json",

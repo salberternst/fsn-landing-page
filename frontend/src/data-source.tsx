@@ -28,6 +28,13 @@ import {
   updateCustomer,
 } from "./api/customers";
 import {
+  createDevice,
+  deleteDevice,
+  fetchDevice,
+  fetchDevices,
+  updateDevice,
+} from "./api/devices";
+import {
   createPolicy,
   deletePolicy,
   fetchPolicies,
@@ -73,11 +80,7 @@ export default {
     } else if (resource === "customers") {
       const customers = await fetchCustomers(params.pagination);
       return {
-        data: customers.map((customer: any) => ({
-          ...customer,
-          thingsboard: {},
-          fuseki: {},
-        })),
+        data: customers,
         pageInfo: {
           hasNextPage: customers.length === params.pagination.perPage,
           hasPreviousPage: params.pagination.page > 1,
@@ -146,6 +149,15 @@ export default {
           hasNextPage: transferProccesses.length === params.pagination.perPage,
           hasPreviousPage: params.pagination.page > 1,
         },
+      };
+    } else if (resource === "devices") {
+      const devices = await fetchDevices(params.pagination);
+      return {
+        data: devices.data.map((device: any) => ({
+          ...device,
+          id: device.id.id,
+        })),
+        total: devices.totalElements,
       };
     }
   },
@@ -234,6 +246,14 @@ export default {
           id: transferProcess["@id"],
         },
       };
+    } else if (resource === "devices") {
+      const device = await fetchDevice(params.id);
+      return {
+        data: {
+          ...device,
+          id: device.id.id,
+        },
+      };
     }
   },
   update: async (resource: any, params: any) => {
@@ -252,6 +272,14 @@ export default {
       const updatedCustomer = await updateCustomer(params.id, params.data);
       return {
         data: updatedCustomer,
+      };
+    } else if (resource === "devices") {
+      const updatedDevice = await updateDevice(params.id, params.data);
+      return {
+        data: {
+          ...updatedDevice,
+          id: updatedDevice.id.id,
+        },
       };
     }
   },
@@ -345,6 +373,14 @@ export default {
           id: transferProcess["@id"],
         },
       };
+    } else if (resource === "devices") {
+      const device = await createDevice(params.data);
+      return {
+        data: {
+          ...device,
+          id: device.id.id,
+        },
+      };
     }
   },
   delete: async (resource: any, params: any) => {
@@ -378,6 +414,13 @@ export default {
       };
     } else if (resource === "contractdefinitions") {
       await deleteContractDefinition(params.id);
+      return {
+        data: {
+          id: params.id,
+        },
+      };
+    } else if (resource === "devices") {
+      await deleteDevice(params.id);
       return {
         data: {
           id: params.id,

@@ -21,6 +21,7 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import GavelIcon from "@mui/icons-material/Gavel";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import AutoModeIcon from "@mui/icons-material/AutoMode";
+import DescriptionIcon from "@mui/icons-material/Description";
 import { useLocation } from "react-router-dom";
 import dataSource from "./data-source";
 import authProvider from "./auth-provider";
@@ -60,6 +61,12 @@ import {
   TransferProcessesList,
   TransferProcessesShow,
 } from "./components/transfer_processes";
+import {
+  DeviceCreate,
+  DeviceEdit,
+  DeviceShow,
+  DevicesList,
+} from "./components/devices";
 
 const CustomUserMenu = () => {
   const { isLoading, identity } = useGetIdentity();
@@ -87,8 +94,8 @@ const CustomMenu = () => {
 
   return (
     <Menu>
-      <Menu.ResourceItem name="thingDescriptions" />
       <Menu.ResourceItem name="devices" />
+      <Menu.ResourceItem name="thingDescriptions" />
       {isAdmin && <Menu.ResourceItem name="customers" />}
       {isAdmin && <Menu.ResourceItem name="users" />}
       <Menu.Item
@@ -96,18 +103,20 @@ const CustomMenu = () => {
         primaryText="Query"
         leftIcon={<QueryStatsIcon />}
       />
-      <Divider />
+      <Divider>EDC</Divider>
       <Menu.ResourceItem name="assets" />
       <Menu.ResourceItem name="policies" />
       <Menu.ResourceItem name="contractdefinitions" />
-      <Menu.Item
-        to="/catalog"
-        primaryText="Catalog"
-        leftIcon={<AutoStoriesIcon />}
-      />
+      {isAdmin && (
+        <Menu.Item
+          to="/catalog"
+          primaryText="Catalog"
+          leftIcon={<AutoStoriesIcon />}
+        />
+      )}
       <Menu.ResourceItem name="contractagreements" />
       <Menu.ResourceItem name="transferprocesses" />
-      <Divider />
+      <Divider>Links</Divider>
       <Menu.Item
         to="/thingsboard"
         primaryText="Thingsboard"
@@ -150,11 +159,20 @@ export const App = () => (
     <Resource
       name="thingDescriptions"
       options={{ label: "Thing Descriptions" }}
-      icon={DeviceHub}
+      icon={DescriptionIcon}
       list={ThingDescriptionList}
       show={ThingDescriptionShow}
       create={ThingDescriptionCreate}
       edit={ThingDescriptionEdit}
+    />
+    <Resource
+      name="devices"
+      options={{ label: "Devices" }}
+      icon={DeviceHub}
+      list={DevicesList}
+      show={DeviceShow}
+      create={DeviceCreate}
+      edit={DeviceEdit}
     />
     <Resource
       name="assets"
