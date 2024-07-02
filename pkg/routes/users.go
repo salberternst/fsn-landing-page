@@ -82,7 +82,7 @@ func getUser(ctx *gin.Context) {
 		return
 	}
 
-	query := fmt.Sprintf("tenant-id:%s", claims.TenantId)
+	query := fmt.Sprintf("tenant-id:%s customer-id:", claims.TenantId)
 	briefRepresentation := false
 	groups, err := client.GetUserGroups(ctx, keycloakToken, "dataspace", userId, gocloak.GetGroupsParams{
 		BriefRepresentation: &briefRepresentation,
@@ -100,10 +100,15 @@ func getUser(ctx *gin.Context) {
 
 	userGroups := []Group{}
 	for _, group := range groups {
-		userGroups = append(userGroups, Group{
-			Id:   *group.ID,
-			Name: *group.Name,
-		})
+		// query doesn't seem to work, so we need to filter the groups manually
+		tenantId := (*group.Attributes)["tenant-id"]
+		customerId := (*group.Attributes)["customer-id"]
+		if tenantId != nil && tenantId[0] == claims.TenantId && customerId != nil {
+			userGroups = append(userGroups, Group{
+				Id:   *group.ID,
+				Name: *group.Name,
+			})
+		}
 	}
 
 	user := User{

@@ -50,7 +50,7 @@ export const CustomerShow = () => {
           <TextField source="name" />
         </Labeled>
         <Labeled fullWidth label="Description">
-          <TextField source="description" emptyText="-"/>
+          <TextField source="description" emptyText="-" />
         </Labeled>
       </SimpleShowLayout>
       <Divider>Thingsboard</Divider>
@@ -72,16 +72,8 @@ export const CustomerShow = () => {
             label="Address"
             emptyText="-"
           />
-          <TextField
-            source="thingsboard.phone"
-            label="Phone"
-            emptyText="-"
-          />
-          <TextField
-            source="thingsboard.email"
-            label="Email"
-            emptyText="-"
-          />
+          <TextField source="thingsboard.phone" label="Phone" emptyText="-" />
+          <TextField source="thingsboard.email" label="Email" emptyText="-" />
           <TextField source="thingsboard.zip" label="ZIP" emptyText="-" />
         </SimpleShowLayout>
       )}

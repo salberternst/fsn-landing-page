@@ -21,6 +21,7 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import GavelIcon from "@mui/icons-material/Gavel";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import AutoModeIcon from "@mui/icons-material/AutoMode";
+import ShieldIcon from "@mui/icons-material/Shield";
 import DescriptionIcon from "@mui/icons-material/Description";
 import { useLocation } from "react-router-dom";
 import dataSource from "./data-source";
@@ -67,6 +68,7 @@ import {
   DeviceShow,
   DevicesList,
 } from "./components/devices";
+import Keycloak from "./components/keycloak";
 
 const CustomUserMenu = () => {
   const { isLoading, identity } = useGetIdentity();
@@ -122,6 +124,13 @@ const CustomMenu = () => {
         primaryText="Thingsboard"
         leftIcon={<DashboardIcon />}
       />
+      {isAdmin && (
+        <Menu.Item
+          to="/keycloak"
+          primaryText="Keycloak"
+          leftIcon={<ShieldIcon />}
+        />
+      )}
     </Menu>
   );
 };
@@ -129,7 +138,7 @@ const CustomMenu = () => {
 const CustomLayout = (props: any) => {
   const location = useLocation();
 
-  if (location.pathname === "/thingsboard") {
+  if (location.pathname === "/thingsboard" || location.pathname === "/keycloak") {
     return (
       <Layout menu={CustomMenu} appBar={CustomAppBar}>
         {props.children}
@@ -155,6 +164,7 @@ export const App = () => (
       <Route path="/sparql" element={<SparqlPage />} />
       <Route path="/thingsboard" element={<Thingsboard />} />
       <Route path="/catalog" element={<Catalog />} />
+      <Route path="/keycloak" element={<Keycloak />} />
     </CustomRoutes>
     <Resource
       name="thingDescriptions"
